@@ -1,0 +1,49 @@
+.profile-img {
+    width: 150px; 
+    height: 150px; 
+    object-fit: cover; 
+    border-radius: 50%; 
+}
+
+.black-box {
+    background-color: black; 
+    color: white; 
+    padding: 20px; 
+    border-radius: 5px; 
+    display: flex; 
+    width: fit-content; 
+    margin: auto;  
+}
+
+.follower {
+    background-color: rgb(53, 157, 255); 
+    color: white; 
+    padding: 20px; 
+    border-radius: 5px; 
+    display: flex; 
+    width: fit-content; 
+    margin: auto;  
+}
+
+.follower:hover {
+    background-color: rgb(53, 157, 255); 
+    color: white; 
+    
+}
+
+
+
+.smaller-card {
+    max-width: 300px; 
+    margin: auto; 
+}
+
+.card-title {
+    background-color: white; 
+    max-width: auto;
+}
+
+.playlist-title{
+    background-color: black; 
+    color: white;
+}
