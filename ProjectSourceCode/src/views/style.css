@@ -1,0 +1,39 @@
+body {
+    background-color: #191414;
+    text-align: center;
+    font-family:Verdana, Geneva, Tahoma, sans-serif; /* temp font*/
+}
+
+h1 {
+    color: white;
+    margin-top: 150px;
+}
+
+p {
+    font-size: 14px;
+    padding-top: 8px;
+}
+
+.login_form {
+    background-color: #1db954;
+    max-width: 500px;
+    margin: 20px auto;      /* space from ceiling */
+    padding: 20px;          /* spacing between top and bottom*/
+    border-radius: 8px;     /* round corners */
+    text-align: left;
+}
+
+.input-group {
+    border-radius: 6px;
+    height: 34px;
+}
+
+#form_submit {
+    background-color: #191414;
+    color: white;
+    border-radius: 6px;
+    max-height: 28px;
+}
+
+
+

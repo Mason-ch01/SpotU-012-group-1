@@ -128,7 +128,33 @@ var redirect_uri = 'http://localhost:3000/spotify_callback';
         error: 'Invalid Username/Password.'
       });
     }
+  // LOGIN ROUTES
+  // render login page
+  app.get('/login', (req, res) => {
+    res.render('pages/login');
+  });
+  
+  // login submission
+  app.post('/login', async (req, res) => {
+    const username = req.body.username;
+    const password = req.body.password;
 
+    // look for user
+    const userQuery = 'SELECT * FROM users WHERE username = $1 LIMIT 1';
+    const user = await db.oneOrNone(userQuery, [username]);
+    if (!user) {
+      return res.render('pages/login', {
+        error: 'This User does not exist,'
+      });
+    }
+
+    // check if password matches with username
+    const match = await bcrypt.compare(password, user.password);
+    if (!match) {
+      return res.render('pages/login', {
+        error: 'Invalid Username/Password.'
+      });
+    }
     req.session.user = user;
     req.session.save();
 
