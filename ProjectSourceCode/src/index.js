@@ -132,6 +132,10 @@ var redirect_uri = 'http://localhost:3000/spotify_callback';
 
     // res.redirect('/home'); redirect to home page if successful login?
   });
+
+  app.get('/share', (req, res) => {
+    res.render('pages/share');
+  });
   
   // authentication
   const auth = (req, res, next) => {

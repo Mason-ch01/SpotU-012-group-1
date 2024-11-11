@@ -20,6 +20,7 @@ form{
     box-shadow: 0 0 40px rgba(8,7,16,0.6);
     padding: 50px 35px;
 }
+
 form *{
     font-family: 'Poppins',sans-serif;
     color: white;
