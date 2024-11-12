@@ -78,7 +78,7 @@ GROUP BY u.userId, u.username;
 --testing
 
 CREATE TABLE users_db (
-    id SERIAL PRIMARY KEY,
+    id INT PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
     dob DATE NOT NULL
 );

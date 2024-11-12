@@ -103,7 +103,7 @@ var redirect_uri = 'http://localhost:3000/spotify_callback';
   // LOGIN ROUTES
   // render login page
   app.get('/login', (req, res) => {
-    res.render('pages/login');
+    res.status(200).render('pages/login');
   });
   
   // login submission
@@ -115,7 +115,7 @@ var redirect_uri = 'http://localhost:3000/spotify_callback';
     const userQuery = 'SELECT * FROM users WHERE username = $1 LIMIT 1';
     const user = await db.oneOrNone(userQuery, [username]);
     if (!user) {
-      return res.render('pages/login', {
+      return res.status(401).render('pages/login', {
         error: 'This User does not exist,'
       });
     }
@@ -123,12 +123,14 @@ var redirect_uri = 'http://localhost:3000/spotify_callback';
     // check if password matches with username
     const match = await bcrypt.compare(password, user.password);
     if (!match) {
-      return res.render('pages/login', {
+      return res.status(401).render('pages/login', {
         error: 'Invalid Username/Password.'
       });
     }
     req.session.user = user;
     req.session.save();
+
+    res.status(200).json({message: 'Success'});
 
     // res.redirect('/home'); redirect to home page if successful login?
   });
@@ -143,57 +145,36 @@ var redirect_uri = 'http://localhost:3000/spotify_callback';
   });
 
   app.post('/add_user', async (req, res) => {
-    //hash the password using bcrypt library
-    const hash = await bcrypt.hash(req.body.password, 10);
-  
-    // To-DO: Insert username and hashed password into the 'users' table
-    db.none(
-      'INSERT INTO users_db(username, password) VALUES ($1, $2);',
-      [req.body.username, hash]
-    )
-      .then(data=>{
-        res.status(201).redirect('/login')
-      })
-      .catch(err =>{
-        console.log(err);
-        res.status(501).redirect('/add_user')
-      })
+    const { id, name, dob } = req.body;
+    try {
+      await db.none(
+        'INSERT INTO users_db (id, name, dob) VALUES ($1, $2, $3);',
+        [id, name, dob]
+      );
+
+      res.status(200).json({ message: 'Success' });
+    } catch (err) {
+      console.error(err);
+      res.status(400).json({ message: 'Invalid input' });
+    }
   });
 
-app.post('/add_user', async (req, res) => {
-  const { username, id, name, dob } = req.body;
 
-  if (!username || !id || !dob) {
-    return res.status(400).json({ message: 'Invalid input' });
+// authentication
+const auth = (req, res, next) => {
+  if (!req.session.user) {
+    return res.redirect('/login');
   }
-
-  try {
-    // Hash the password
-    // const hash = await bcrypt.hash(password, 10);
-
-    await db.none(
-      'INSERT INTO users_db (id, name, dob) VALUES ($1, $2, $3, $4);',
-      [id, username, name, dob]
-    );
-
-    // Respond with success message
-    res.status(200).json({ message: 'Success' });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: 'Database error' });
-  }
-});
-
-  
-  // authentication
-  const auth = (req, res, next) => {
-    if (!req.session.user) {
-      return res.redirect('/login');
-    }
-    next();
-  };
+  next();
+};
   
   app.use(auth);
-
-// app.listen(3000);
-module.exports = app.listen(3000);
+  
+  // app.listen(3000);
+  // module.exports = app.listen(3000);
+  const server = app.listen(3000, () => {
+    console.log('Server is running on http://localhost:3000');
+  });
+  
+  // Export `server` and `db` for use in tests
+  module.exports = { server, db };
