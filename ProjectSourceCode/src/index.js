@@ -136,6 +136,54 @@ var redirect_uri = 'http://localhost:3000/spotify_callback';
   app.get('/share', (req, res) => {
     res.render('pages/share');
   });
+
+  //########################### Testing ##################################
+  app.get('/welcome', (req, res) => {
+    res.json({status: 'success', message: 'Welcome!'});
+  });
+
+  app.post('/add_user', async (req, res) => {
+    //hash the password using bcrypt library
+    const hash = await bcrypt.hash(req.body.password, 10);
+  
+    // To-DO: Insert username and hashed password into the 'users' table
+    db.none(
+      'INSERT INTO users_db(username, password) VALUES ($1, $2);',
+      [req.body.username, hash]
+    )
+      .then(data=>{
+        res.status(201).redirect('/login')
+      })
+      .catch(err =>{
+        console.log(err);
+        res.status(501).redirect('/add_user')
+      })
+  });
+
+app.post('/add_user', async (req, res) => {
+  const { username, id, name, dob } = req.body;
+
+  if (!username || !id || !dob) {
+    return res.status(400).json({ message: 'Invalid input' });
+  }
+
+  try {
+    // Hash the password
+    // const hash = await bcrypt.hash(password, 10);
+
+    await db.none(
+      'INSERT INTO users_db (id, name, dob) VALUES ($1, $2, $3, $4);',
+      [id, username, name, dob]
+    );
+
+    // Respond with success message
+    res.status(200).json({ message: 'Success' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Database error' });
+  }
+});
+
   
   // authentication
   const auth = (req, res, next) => {
@@ -147,4 +195,5 @@ var redirect_uri = 'http://localhost:3000/spotify_callback';
   
   app.use(auth);
 
-app.listen(3000);
+// app.listen(3000);
+module.exports = app.listen(3000);
