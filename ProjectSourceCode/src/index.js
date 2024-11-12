@@ -61,7 +61,12 @@ const bcrypt = require('bcryptjs'); //  To hash passwords
 var redirect_uri = 'http://localhost:3000/spotify_callback';
 
   app.get('/', (req,res) => {
-    res.redirect('/login');
+    if (!req.session.user) {
+      res.redirect('/login');
+    }
+    else {
+      res.redirect('/explore');
+    }
   });
 
 // app.get('/login', function(req, res) {
@@ -108,6 +113,7 @@ var redirect_uri = 'http://localhost:3000/spotify_callback';
   
   // login submission
   app.post('/login', async (req, res) => {
+    //console.log(req.body);
     const username = req.body.username;
     const password = req.body.password;
 
@@ -130,10 +136,10 @@ var redirect_uri = 'http://localhost:3000/spotify_callback';
     req.session.user = user;
     req.session.save();
 
-    // res.redirect('/home'); redirect to home page if successful login?
+    res.redirect('/explore'); 
   });
   
-  // authentication
+  //authentication
   const auth = (req, res, next) => {
     if (!req.session.user) {
       return res.redirect('/login');
@@ -142,5 +148,10 @@ var redirect_uri = 'http://localhost:3000/spotify_callback';
   };
   
   app.use(auth);
+
+  //explore
+  app.get('/explore', (req, res) => {
+    res.render('pages/explore');
+  })
 
 app.listen(3000);
