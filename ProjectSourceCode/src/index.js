@@ -137,6 +137,31 @@ var redirect_uri = 'http://localhost:3000/spotify_callback';
   app.get('/profile', (req, res) => {
     res.render('pages/profile')
   });
+
+  app.get("/profile/:username", (req, res) => {
+
+     const { username } = req.params;
+
+    const query = ` SELECT u.userId, u.username, COALESCE(f.follower_count, 0) AS follower_count, COALESCE(g.following_count, 0) AS following_count
+      FROM users u
+      LEFT JOIN user_follower_count f ON u.userId = f.userId
+      LEFT JOIN user_following_count g ON u.userId = g.userId
+      WHERE u.username = $1;
+      `;
+      db.any(query, [username])
+
+      .then(results => {
+        // how to get this data into stuff wehre i can use handlebars
+        res.render('pages/pages', { data: results });
+
+      })
+  
+      .catch(error => {
+        console.error('Error', error);
+      });
+  
+      
+  })
   
   // authentication
   const auth = (req, res, next) => {
