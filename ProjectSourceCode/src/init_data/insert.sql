@@ -1,0 +1,1 @@
+INSERT INTO users (username, password, firstName, lastName)  VALUES ('test', '$2a$10$dvrxvCN7HBZOT5pSunEPFOiqLAzFJtLUMNIJGL8QegHUl9bWozKQS', 'te', 'st'); --password: test--

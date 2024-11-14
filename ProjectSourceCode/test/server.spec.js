@@ -38,6 +38,37 @@ describe('Server!', () => {
 // Explanation: The testcase will call the /add_user API with the following input
 // and expects the API to return a status of 200 along with the "Success" message.
 
+
+describe('login', () => {
+  it('Positive: successfully logged in', done => {
+    chai
+      .request(server)
+      .post('/login')
+      .send({'username': 'test', 'password': 'test'})
+      .end((err, res) => {
+        expect(res).to.have.status(200);
+        expect(res.body.message).to.equals('Success');
+        done();
+
+      });
+  });
+
+  it('Negative: not successfully logged in', done => {
+    chai
+      .request(server)
+      .post('/login')
+      .send({'username': 'test1', 'password': 'test'})
+      .end((err, res) => {
+        expect(res).to.have.status(401);
+        done();
+
+      });
+  });
+
+});
+
+
+
 describe('Testing Add User API', () => {
     it('positive : /add_user', done => {
       chai
@@ -88,7 +119,7 @@ describe('Testing Add User API', () => {
   });
 
 // ********************************************************************************
-
+//CHange to test register endpoints
 describe('testing login route', () => {
     let agent;
     const testUser = {

@@ -113,20 +113,25 @@ var redirect_uri = 'http://localhost:3000/spotify_callback';
 
     // look for user
     const userQuery = 'SELECT * FROM users WHERE username = $1 LIMIT 1';
+    console.log('checking if user exists')
     const user = await db.oneOrNone(userQuery, [username]);
     if (!user) {
       return res.status(401).render('pages/login', {
         error: 'This User does not exist,'
       });
     }
+    console.log('user exists')
 
     // check if password matches with username
+    console.log('checking match')
     const match = await bcrypt.compare(password, user.password);
     if (!match) {
       return res.status(401).render('pages/login', {
         error: 'Invalid Username/Password.'
       });
     }
+
+    console.log('matched')
     req.session.user = user;
     req.session.save();
 
