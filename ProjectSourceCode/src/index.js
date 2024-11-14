@@ -58,7 +58,7 @@ const bcrypt = require('bcryptjs'); //  To hash passwords
     })
   );
 
-var redirect_uri = 'http://localhost:3000/spotify_callback';
+const redirect_uri = 'http://localhost:3000/spotify_callback';
 
   app.get('/', (req,res) => {
     res.redirect('/login');
@@ -66,28 +66,34 @@ var redirect_uri = 'http://localhost:3000/spotify_callback';
 
  app.get('/spotify_connect', function(req, res) {
 
-   var state = "some_random_state";
-   var scope = 'user-read-private user-read-email';
+   const state = "ChangedState";
+   const scope = 'user-read-private user-read-email';
 
    res.redirect('https://accounts.spotify.com/authorize?' +
        'response_type=code&'+
        `client_id=${process.env.SPOTIFY_CLIENT_ID}&`+
        `scope=${scope}&`+
-       `redirect_uri=${redirect_uri}&`+
-       `state=${state}`
+       `redirect_uri=${redirect_uri}&`
      );
  });
 
+
+
+
  app.get('/spotify_callback', async function(req, res) {
-
+     console.log(req.url)
      var code = req.query.code || null;
-     var state = req.query.state || null;
 
-     if (state === null) {
+     if (code === null) {
          console.log("Some error has occured")
      } else {
          const token_url = 'https://accounts.spotify.com/api/token';
-         const data = `grant_type=client_credentials`
+         const data = {
+          "grant_type":"authorization_code",
+          "code":code,
+          "redirect_uri":redirect_uri
+        }
+
   
          const response = await axios.post(token_url, data, {
            headers: { 
@@ -96,10 +102,13 @@ var redirect_uri = 'http://localhost:3000/spotify_callback';
            }
          })
          //return access token
-         console.log(response.data.access_token); 
+         console.log(response.data.access_token)
+         res.cookie("clientId",response.data.access_token)
+         res.redirect("/")
 
      }
    });
+  
   // LOGIN ROUTES
   // render login page
   app.get('/login', (req, res) => {
