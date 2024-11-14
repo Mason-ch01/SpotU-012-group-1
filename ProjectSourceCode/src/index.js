@@ -78,28 +78,28 @@ var redirect_uri = 'http://localhost:3000/spotify_callback';
 //     );
 // });
 
-// app.get('/spotify_callback', async function(req, res) {
+app.get('/spotify_callback', async function(req, res) {
 
-//     var code = req.query.code || null;
-//     var state = req.query.state || null;
+    var code = req.query.code || null;
+    var state = req.query.state || null;
   
-//     if (state === null) {
-//         console.log("Some error has occured")
-//     } else {
-//         const token_url = 'https://accounts.spotify.com/api/token';
-//         const data = `grant_type=client_credentials`
+    if (state === null) {
+        console.log("Some error has occured")
+    } else {
+        const token_url = 'https://accounts.spotify.com/api/token';
+        const data = `grant_type=client_credentials`
     
-//         const response = await axios.post(token_url, data, {
-//           headers: { 
-//             'Authorization': `Basic ${Buffer.from(`${process.env.SPOTIFY_CLIENT_ID}:${process.env.SPOTIFY_CLIENT_SECRET}`, 'utf-8').toString('base64')}`,
-//             'Content-Type': 'application/x-www-form-urlencoded' 
-//           }
-//         })
-//         //return access token
-//         console.log(response.data.access_token); 
+        const response = await axios.post(token_url, data, {
+          headers: { 
+            'Authorization': `Basic ${Buffer.from(`${process.env.SPOTIFY_CLIENT_ID}:${process.env.SPOTIFY_CLIENT_SECRET}`, 'utf-8').toString('base64')}`,
+            'Content-Type': 'application/x-www-form-urlencoded' 
+          }
+        })
+        //return access token
+        console.log(response.data.access_token); 
 
-//     }
-//   });
+    }
+  });
   // LOGIN ROUTES
   // render login page
   app.get('/login', (req, res) => {
@@ -119,7 +119,7 @@ var redirect_uri = 'http://localhost:3000/spotify_callback';
         error: 'This User does not exist,'
       });
     }
-
+    
     // check if password matches with username
     const match = await bcrypt.compare(password, user.password);
     if (!match) {
@@ -133,18 +133,39 @@ var redirect_uri = 'http://localhost:3000/spotify_callback';
     // res.redirect('/home'); redirect to home page if successful login?
   });
 
-  app.get('/share', (req, res) => {
-    res.render('pages/share');
+  app.get('/register', (req, res) => {
+    res.render('pages/register');
   });
 
-  //########################### Testing ##################################
-  app.get('/welcome', (req, res) => {
-    res.json({status: 'success', message: 'Welcome!'});
-  });
+  app.post('/register', async (req, res) => {
+    const username = req.body.username;
+    const password = req.body.password;
+    const firstName = req.body.firstName;
+    const lastName = req.body.lastName;
 
-  app.post('/add_user', async (req, res) => {
-    //hash the password using bcrypt library
-    const hash = await bcrypt.hash(req.body.password, 10);
+    try {
+        const hash = await bcrypt.hash(password, 10);
+        const query = 'INSERT INTO users (username, password, firstName, lastName) VALUES ($1, $2, $3, $4)';
+        await db.none(query, [username, hash, firstName, lastName]);
+
+        console.log('User registered successfully.');
+        // res.redirect('/login')
+        var state = "some_random_state";
+        var scope = 'user-read-private user-read-email';
+
+        res.redirect('https://accounts.spotify.com/authorize?' +
+            'response_type=code&'+
+            `client_id=${process.env.SPOTIFY_CLIENT_ID}&`+
+            `scope=${scope}&`+
+            `redirect_uri=${redirect_uri}&`+
+            `state=${state}`
+          );
+    } catch (error) {
+        console.error('Error during registration:', error);
+        res.redirect('/register');
+    }
+});
+
   
     // To-DO: Insert username and hashed password into the 'users' table
     db.none(
