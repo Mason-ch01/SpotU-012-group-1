@@ -184,9 +184,9 @@ app.get('/share', (req, res) =>{
 
 app.get('/explore', async (req, res) => {
   try {
+      //Change this to req.session.userId in the future 
       const userId = 1;
 
-      // Database query to fetch followers' posts
       const query = `
       SELECT 
           posts.postId,
@@ -219,7 +219,6 @@ app.get('/explore', async (req, res) => {
 
       console.log(posts);
 
-      // Render the Handlebars template with the posts
       res.render('pages/explore', { posts });
 
   } catch (err) {
