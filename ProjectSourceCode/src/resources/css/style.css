@@ -146,6 +146,10 @@ input{
   margin-left: 300px; /* Main content moves to the right */
 }
 
+.nav_profile{
+  align-items: flex-end;
+}
+
 /* Hamburger Button Styling */
 #openNavButton {
   font-size: 30px;
@@ -338,9 +342,14 @@ input{
  }
  
  .new_post_title {
-  color: #818181;
+  color: black;
   font-weight: bold;
   letter-spacing: .1em;
-  font-size: 40px;
+  font-size: 30px;
   padding-top: 25px;
+ }
+
+ .new_post_search{
+  margin-top: 25px;
+  background-color: white;
  }

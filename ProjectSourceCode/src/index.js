@@ -103,11 +103,6 @@ app.get('/spotify_connect', function(req, res) {
          console.log(response.data.access_token)
          res.cookie("clientId",response.data.access_token)
          res.redirect("/")
-
-<<<<<<< HEAD
-    }
-  });
-=======
      }
    });
    
@@ -161,11 +156,6 @@ async function searchSong(req,songName) {
   }
 }
 
-
-
-
-  
->>>>>>> main
   // LOGIN ROUTES
   // render login page
   app.get('/login', (req, res) => {
@@ -229,6 +219,9 @@ async function searchSong(req,songName) {
     res.render('pages/new_posts');
   });
 
+  app.post('/new_posts', (req, res) => {
+    
+  });
   
   // authentication
   const auth = (req, res, next) => {
