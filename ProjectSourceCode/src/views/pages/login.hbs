@@ -1,13 +1,14 @@
+    {{>message}}
     <div class="login_container">
         <form class="login_form" method="POST" action="/login">
         <h3>SPOT-U LOGIN</h3>
         <label for="username_id">Username:</label>
         <br/>
-        <input type="text" name="email" placeholder="Enter your username">
+        <input type="text" name="email" placeholder="Enter your username" id="username_id">
         <br/>
         <label for="password_id">Password:</label>
         <br/>
-        <input type="password" name="password" placeholder="Enter your password">
+        <input type="password" name="password" placeholder="Enter your password" id="password_id">
         <br/>
         <input class="login" id="form_submit" type="submit" value="Sign in"/>
         </br>
