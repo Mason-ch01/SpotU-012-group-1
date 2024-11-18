@@ -36,7 +36,18 @@ CREATE TABLE IF NOT EXISTS posts(
     userId INT REFERENCES users(userId) ON DELETE CASCADE,
     songId INT REFERENCES songs(songId),
     playlistId INT REFERENCES playlists(playlistId),
-    likes INT NOT NULL DEFAULT 0
+    likes INT NOT NULL DEFAULT 0,
+    dislikes INT NOT NULL DEFAULT 0
+);
+
+CREATE TABLE (
+    userId INT REFERENCES users(userId) ON DELETE CASCADE,
+    favorite INT REFERENCES postId(postId)
+    week INT REFERENCES postId(postId)
+    month INT REFERENCES postId(postId)
+    year INT REFERENCES postId(postId)
+
+
 );
 
 CREATE TABLE IF NOT EXISTS comments(
@@ -74,3 +85,4 @@ GROUP BY u.userId, u.username;
 --     user_following_count g ON u.userId = g.userId
 -- WHERE 
 --     u.username = '<username>';
+

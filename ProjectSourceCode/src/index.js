@@ -163,6 +163,9 @@ var redirect_uri = 'http://localhost:3000/spotify_callback';
       
   })
   
+  app.get('/edit', (req, res) => {
+    res.render('pages/edit')
+  });
   // authentication
   const auth = (req, res, next) => {
     if (!req.session.user) {

@@ -189,3 +189,9 @@ input{
   background-color: black; 
   color: white;
 }
+
+.edit-button{
+  max-width: 300px; 
+  font-size: 10px;
+  text-align: right;
+}
