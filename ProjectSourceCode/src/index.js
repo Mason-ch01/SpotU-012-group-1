@@ -15,6 +15,7 @@ const bcrypt = require('bcryptjs'); //  To hash passwords
     layoutsDir: __dirname + '/views/layout',
     partialsDir: __dirname + '/views/partials',
   });
+
   // database configuration
   const dbConfig = {
     host: 'db', // the database server
@@ -64,6 +65,10 @@ const redirect_uri = 'http://localhost:3000/spotify_callback';
     res.redirect('/login');
   });
 
+app.get('/share', (req, res) =>{
+  res.render('pages/share');
+});
+
  app.get('/spotify_connect', function(req, res) {
 
    const scope = 'user-read-private user-read-email';
@@ -75,8 +80,6 @@ const redirect_uri = 'http://localhost:3000/spotify_callback';
        `redirect_uri=${redirect_uri}&`
      );
  });
-
-
 
 
  app.get('/spotify_callback', async function(req, res) {
@@ -178,31 +181,114 @@ async function searchSong(req,songName) {
     const user = await db.oneOrNone(userQuery, [username]);
     if (!user) {
       return res.render('pages/login', {
-        error: 'This User does not exist,'
+        error: 'This User does not exist,',
+        message: 'User does not exist'
       });
     }
-
+    
     // check if password matches with username
     const match = await bcrypt.compare(password, user.password);
     if (!match) {
       return res.render('pages/login', {
-        error: 'Invalid Username/Password.'
+        error: 'Invalid Username/Password.',
+        message: 'Invalid Username/Password'
       });
     }
     req.session.user = user;
     req.session.save();
 
-    // res.redirect('/home'); redirect to home page if successful login?
+    res.redirect('/share');// redirect to home page if successful login?
   });
-  
-  // authentication
-  const auth = (req, res, next) => {
-    if (!req.session.user) {
-      return res.redirect('/login');
+
+  app.get('/register', (req, res) => {
+    res.render('pages/register');
+  });
+
+  app.post('/register', async (req, res) => {
+    const username = req.body.username;
+    const password = req.body.password;
+    const firstName = req.body.firstName;
+    const lastName = req.body.lastName;
+
+    try {
+        const hash = await bcrypt.hash(password, 10);
+        const query = 'INSERT INTO users (username, password, firstName, lastName) VALUES ($1, $2, $3, $4)';
+        await db.none(query, [username, hash, firstName, lastName]);
+
+        console.log('User registered successfully.');
+
+        // res.redirect('/login')
+        var state = "some_random_state";
+        var scope = 'user-read-private user-read-email';
+
+        res.redirect('https://accounts.spotify.com/authorize?' +
+            'response_type=code&'+
+            `client_id=${process.env.SPOTIFY_CLIENT_ID}&`+
+            `scope=${scope}&`+
+            `redirect_uri=${redirect_uri}&`+
+            `state=${state}`
+          );
+    } catch (error) {
+        console.error('Error during registration:', error);
+        res.redirect('/register');
     }
-    next();
-  };
+});
+
+app.get('/explore', async (req, res) => {
+  try {
+      //Change this to req.session.userId in the future 
+      const userId = 1;
+
+      const query = `
+      SELECT 
+          posts.postId,
+          posts.userId AS authorId,
+          users.username AS authorUsername,
+          posts.songId,
+          songs.name AS songName,
+          songs.artist AS songArtist,
+          songs.link AS songLink,
+          posts.playlistId,
+          playlists.name AS playlistName,
+          posts.likes
+      FROM 
+          posts
+      INNER JOIN 
+          followers ON posts.userId = followers.followeeId
+      INNER JOIN 
+          users ON posts.userId = users.userId
+      LEFT JOIN 
+          songs ON posts.songId = songs.songId
+      LEFT JOIN 
+          playlists ON posts.playlistId = playlists.playlistId
+      WHERE 
+          followers.followerId = $1
+      ORDER BY 
+          posts.postId DESC;
+      `;
+
+      const posts = await db.any(query, [userId]);
+
+      console.log(posts);
+
+      res.render('pages/explore', { posts });
+
+  } catch (err) {
+      console.error(err);
+      res.status(500).send('Server Error');
+  }
+});
+
+
   
-  app.use(auth);
+// // authentication
+// const auth = (req, res, next) => {
+//   if (!req.session.user) {
+//     return res.redirect('/login');
+//   }
+//   next();
+// };
+  
+//   app.use(auth);
 
 app.listen(3000);
