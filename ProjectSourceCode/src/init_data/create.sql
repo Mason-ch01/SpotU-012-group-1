@@ -74,3 +74,11 @@ GROUP BY u.userId, u.username;
 --     user_following_count g ON u.userId = g.userId
 -- WHERE 
 --     u.username = '<username>';
+
+--testing
+
+CREATE TABLE users_db (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    dob DATE NOT NULL
+);
