@@ -156,22 +156,19 @@ app.get('/spotify_connect', function(req, res) {
         await db.none(query, [username, hash, firstName, lastName]);
 
         console.log('User registered successfully.');
-        // res.redirect('/login')
         var state = "some_random_state";
         var scope = 'user-read-private user-read-email';
 
-        res.redirect('https://accounts.spotify.com/authorize?' +
-            'response_type=code&'+
-            `client_id=${process.env.SPOTIFY_CLIENT_ID}&`+
-            `scope=${scope}&`+
-            `redirect_uri=${redirect_uri}&`+
-            `state=${state}`
-          );
+        res.redirect('/spotify_connect');
     } catch (error) {
         console.error('Error during registration:', error);
         res.redirect('/register');
     }
 });
+
+  app.get('/new_posts', (req, res) => {
+    res.render('pages/new_posts');
+  });
 
   
   // authentication
