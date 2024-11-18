@@ -71,7 +71,6 @@ app.get('/share', (req, res) =>{
 
  app.get('/spotify_connect', function(req, res) {
 
-   const state = "ChangedState";
    const scope = 'user-read-private user-read-email';
 
    res.redirect('https://accounts.spotify.com/authorize?' +
@@ -84,10 +83,10 @@ app.get('/share', (req, res) =>{
 
 
  app.get('/spotify_callback', async function(req, res) {
-     console.log(req.url)
      var code = req.query.code || null;
 
      if (code === null) {
+          //TODO: Display a better error message
          console.log("Some error has occured")
      } else {
          const token_url = 'https://accounts.spotify.com/api/token';
@@ -111,6 +110,60 @@ app.get('/share', (req, res) =>{
 
      }
    });
+   
+   function getClientIdFromCookies(req){
+    return req.headers.cookie.split("clientId=")[1]
+   }
+
+
+  async function getUserProfile(req) {
+    const clientId = getClientIdFromCookies(req);
+    if (!clientId){
+      console.log("Error getting clientId from cookie");
+      return null;
+    }
+    const url = "https://api.spotify.com/v1/me";
+    try {
+      const response = await axios.get(url, {
+        headers: {
+          'Authorization': `Bearer ${clientId}`
+        }
+      });
+      return response.data;
+    } catch (error) {
+      console.log("Error fetching user profile:", error.message);
+      return null;
+    }
+  }
+
+async function searchSong(req,songName) {
+  const clientId = getClientIdFromCookies(req);
+  if (!clientId) {
+    console.log("Error getting clientId from cookie");
+    return null;
+  }
+  const url = "https://api.spotify.com/v1/search";
+  try {
+    const response = await axios.get(url, {
+      headers: {
+        'Authorization': `Bearer ${clientId}`
+      },
+      params: {
+        q: songName,
+        type: 'track',
+        limit: 20
+      }
+    });
+    return response.data.tracks.items;
+  } catch (error) {
+    console.log("Error searching for song:", error.message);
+    return null;
+  }
+}
+
+
+
+
   
   // LOGIN ROUTES
   // render login page
