@@ -1,0 +1,31 @@
+<h1 style="color:white">Posts</h1>
+<div class="container d-flex justify-content-center flex-wrap">
+    {{#if posts.length}}
+        <ul>
+            {{#each posts}}
+                <div class="col-md-4 mb-4">
+                    <div class="card h-100" style="background-color: rgba(255,255,255,0.13); width: 600px;">
+                        <div class="card-body">
+                            <h5 class="card-title" style="color: white;"><strong>{{this.authorusername}}</strong></h5>
+                            {{#if songname}}
+                                <p class="card-text" style="color: white;">
+                                    <strong>Song:</strong> {{this.songname}} <br>
+                                    <strong>Artist:</strong> {{this.songartist}} <br>
+                                    <a href="{{this.songlink}}">Listen Here</a> <br>
+                                </p>
+                            {{/if}}
+                            {{#if playlistname}}
+                                <p class="card-text" style="color: white;">
+                                    <strong>Playlist Name:</strong> {{this.playlistname}} <br>
+                                </p>
+                            {{/if}}
+                            <p style="color: white"><strong>Likes:</strong> {{this.likes}}</p>
+                        </div>
+                    </div>
+                </div>
+            {{/each}}
+        </ul>
+    {{else}}
+        <p>No posts from your followers yet.</p>
+    {{/if}}
+</div>
