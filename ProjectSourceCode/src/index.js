@@ -65,8 +65,8 @@ app.get('/', (req, res) => {
 });
 
 
-app.get('/share', (req, res) => {
-  res.render('pages/share');
+app.get('/search', (req, res) => {
+  res.render('pages/search');
 });
 
 app.get('/spotify_connect', function (req, res) {
@@ -80,8 +80,6 @@ app.get('/spotify_connect', function (req, res) {
     `redirect_uri=${redirect_uri}&`
   );
 });
-
-
 
 app.get('/spotify_callback', async function (req, res) {
   var code = req.query.code || null;
@@ -137,11 +135,13 @@ async function getUserProfile(req) {
 }
 
 async function searchSong(req, songName) {
-  const clientId = getClientIdFromCookies(req);
+  // const clientId = getClientIdFromCookies(req);
+  const clientId = 'BQB70RLU7n0Fr9QiX5EvvBMoVGw5cz18mngauxBu80voHfDLFr2rLjp84AmdrOQu0auAL30V8yNWV2UtyWwKE8NTL1DxeKP9SasafRWuXmS8KrTA14CN3YLEqc3TCKGHQfbgzEdMy0dmKLgrZmWZEyPGWEci4-0apCBzrrwcJ0xM__PxYTXrPcKuMuH3jMiMIjzLFW9V_iFOIhbEfja-ucI8E2tucimrSCEj0VNVr1F5_C1isMNvofCsjkeVxIMla20MHzH2zdRDEqCL-R3ahLAJC6HE_Ava';
   if (!clientId) {
     console.log("Error getting clientId from cookie");
     return null;
   }
+
   const url = "https://api.spotify.com/v1/search";
   try {
     const response = await axios.get(url, {
@@ -160,6 +160,17 @@ async function searchSong(req, songName) {
     return null;
   }
 }
+
+app.get('/search-song', async (req, res) => {
+  const songName = req.query.songName;
+  const tracks = await searchSong(req, songName);
+  console.log(tracks);
+  if (tracks) {
+    res.render('pages/search', { tracks });
+  } else {
+    res.status(500).send('Error searching for song');
+  }
+});
 
 // LOGIN ROUTES
 // render login page
@@ -193,7 +204,7 @@ app.post('/login', async (req, res) => {
   req.session.user = user;
   req.session.save();
 
-  res.redirect('/share');// redirect to home page if successful login?
+  res.redirect('/explore');// redirect to home page if successful login?
 });
 
 app.get('/register', (req, res) => {
