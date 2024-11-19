@@ -160,10 +160,6 @@ async function searchSong(req,songName) {
     return null;
   }
 }
-
-
-
-
   
   // LOGIN ROUTES
   // render login page
@@ -241,16 +237,27 @@ app.get('/explore', async (req, res) => {
 
       const query = `
       SELECT 
-          posts.postId,
-          posts.userId AS authorId,
-          users.username AS authorUsername,
-          posts.songId,
-          songs.name AS songName,
-          songs.artist AS songArtist,
-          songs.link AS songLink,
-          posts.playlistId,
-          playlists.name AS playlistName,
-          posts.likes
+        posts.postId,
+        posts.userId AS authorId,
+        users.username AS authorUsername,
+        posts.songId,
+        songs.name AS songName,
+        songs.artist AS songArtist,
+        songs.link AS songLink,
+        posts.playlistId,
+        playlists.name AS playlistName,
+        posts.likes,
+        (SELECT json_agg(
+            json_build_object(
+                'commentId', comments.commentId,
+                'userId', comments.userId,
+                'comment', comments.comment,
+                'commentAuthor', users.username
+            )
+        )
+        FROM comments 
+        INNER JOIN users ON comments.userId = users.userId
+        WHERE comments.postId = posts.postId) AS comments
       FROM 
           posts
       INNER JOIN 

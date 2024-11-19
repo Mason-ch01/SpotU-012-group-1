@@ -20,6 +20,11 @@
                                 </p>
                             {{/if}}
                             <p style="color: white"><strong>Likes:</strong> {{this.likes}}</p>
+                            <ul>
+                                {{#each this.comments}}
+                                    <li style="color: white">{{this.comment}}</li>
+                                {{/each}}
+                            </ul>
                         </div>
                     </div>
                 </div>
