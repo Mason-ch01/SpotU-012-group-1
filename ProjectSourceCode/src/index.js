@@ -61,7 +61,12 @@ app.use(
 const redirect_uri = 'http://localhost:3000/spotify_callback';
 
 app.get('/', (req, res) => {
-  res.redirect('/login');
+  if(!req.session.user){
+    res.redirect('/login');
+  }
+  else{
+    res.redirect('/explore')
+  }
 });
 
 
@@ -193,7 +198,7 @@ app.post('/login', async (req, res) => {
   req.session.user = user;
   req.session.save();
 
-  res.redirect('/share');// redirect to home page if successful login?
+  res.redirect('/');// redirect to home page if successful login?
 });
 
 app.get('/register', (req, res) => {
@@ -227,7 +232,8 @@ app.get('/new_posts', (req, res) => {
 });
 
 app.post('/new_posts', (req, res) => {
-  
+  const songname = req.body.Song_Name;
+  searchSong(req, songname)
 });
 
 app.get('/explore', async (req, res) => {
