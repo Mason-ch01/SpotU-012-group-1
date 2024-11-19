@@ -296,13 +296,13 @@ input{
   }
 }
 
-/* From Uiverse.io by alexruix */ 
+/* New_post style */ 
 .card {
   margin: auto;
   width: 50%;
-  border: 3px solid black;
+  border: 1px solid black;
   padding: 10px;
-  --background: linear-gradient(to left, #355E3B 0%, black 100%);
+  --background: linear-gradient(to left top, #1db954 0%, #212121 100%);
   width: 400px;
   height: 600px;
   border-radius: 1rem;
