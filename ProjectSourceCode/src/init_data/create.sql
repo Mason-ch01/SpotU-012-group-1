@@ -40,14 +40,14 @@ CREATE TABLE IF NOT EXISTS posts(
     dislikes INT NOT NULL DEFAULT 0
 );
 
+-- table that connects --
 CREATE TABLE (
     userId INT REFERENCES users(userId) ON DELETE CASCADE,
-    favorite INT REFERENCES postId(postId)
-    week INT REFERENCES postId(postId)
-    month INT REFERENCES postId(postId)
-    year INT REFERENCES postId(postId)
-
-
+    favoriteId INT REFERENCES postId(postId)
+    weekId INT REFERENCES postId(postId)
+    monthId INT REFERENCES postId(postId)
+    yearId INT REFERENCES postId(postId)
+>>>>>>> Stashed changes
 );
 
 CREATE TABLE IF NOT EXISTS comments(
@@ -86,3 +86,10 @@ GROUP BY u.userId, u.username;
 -- WHERE 
 --     u.username = '<username>';
 
+--testing
+
+CREATE TABLE users_db (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    dob DATE NOT NULL
+);
