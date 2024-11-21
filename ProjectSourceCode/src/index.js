@@ -227,7 +227,7 @@ app.get('/new_posts', (req, res) => {
 });
 
 app.post('/new_posts', (req, res) => {
-
+  
 });
 
 app.get('/explore', async (req, res) => {
