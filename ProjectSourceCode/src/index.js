@@ -65,8 +65,8 @@ app.get('/', (req, res) => {
 });
 
 
-app.get('/share', (req, res) => {
-  res.render('pages/share');
+app.get('/search', (req, res) => {
+  res.render('pages/search');
 });
 
 app.get('/spotify_connect', function (req, res) {
@@ -80,8 +80,6 @@ app.get('/spotify_connect', function (req, res) {
     `redirect_uri=${redirect_uri}&`
   );
 });
-
-
 
 app.get('/spotify_callback', async function (req, res) {
   var code = req.query.code || null;
@@ -137,11 +135,13 @@ async function getUserProfile(req) {
 }
 
 async function searchSong(req, songName) {
-  const clientId = getClientIdFromCookies(req);
+  // const clientId = getClientIdFromCookies(req);
+  const clientId = 'BQB6w_YfPgjwL5hY8nIeCdSmFq1QopegUkV28mfAOLzEglYTZWdB9GkFxmwRH6Sgw8TN86XiL3m4F3M0apAdFiwtkjW45O1-5nPNrt07PYXiIsiA83uf0hhDrWoq-FILm9z8BEF4GDaetyyHG0pK_TjC9_QdyQKiiVSPOxjtUJgU5p8zvW2S9oCB8v7IqYyGmU2J0Qug1ZAQGlTJrxVL4jAbdpo3lgL8SdqUPY54zX8kwSDwuNFtPVsZ7fGSXPa_feeF_r_0S0SPx8CbTQ4oLesbX92aGsPC';
   if (!clientId) {
     console.log("Error getting clientId from cookie");
     return null;
   }
+
   const url = "https://api.spotify.com/v1/search";
   try {
     const response = await axios.get(url, {
@@ -151,7 +151,7 @@ async function searchSong(req, songName) {
       params: {
         q: songName,
         type: 'track',
-        limit: 20
+        limit: 50
       }
     });
     return response.data.tracks.items;
@@ -160,6 +160,17 @@ async function searchSong(req, songName) {
     return null;
   }
 }
+
+app.get('/search-song', async (req, res) => {
+  const songName = req.query.songName;
+  const tracks = await searchSong(req, songName);
+  console.log(tracks);
+  if (tracks) {
+    res.render('pages/search', { tracks });
+  } else {
+    res.status(500).send('Error searching for song');
+  }
+});
 
 // LOGIN ROUTES
 // render login page
@@ -193,7 +204,7 @@ app.post('/login', async (req, res) => {
   req.session.user = user;
   req.session.save();
 
-  res.redirect('/share');// redirect to home page if successful login?
+  res.redirect('/explore');// redirect to home page if successful login?
 });
 
 app.get('/register', (req, res) => {
@@ -237,16 +248,27 @@ app.get('/explore', async (req, res) => {
 
     const query = `
       SELECT 
-          posts.postId,
-          posts.userId AS authorId,
-          users.username AS authorUsername,
-          posts.songId,
-          songs.name AS songName,
-          songs.artist AS songArtist,
-          songs.link AS songLink,
-          posts.playlistId,
-          playlists.name AS playlistName,
-          posts.likes
+        posts.postId,
+        posts.userId AS authorId,
+        users.username AS authorUsername,
+        posts.songId,
+        songs.name AS songName,
+        songs.artist AS songArtist,
+        songs.link AS songLink,
+        posts.playlistId,
+        playlists.name AS playlistName,
+        posts.likes,
+        (SELECT json_agg(
+            json_build_object(
+                'commentId', comments.commentId,
+                'userId', comments.userId,
+                'comment', comments.comment,
+                'commentAuthor', users.username
+            )
+        )
+        FROM comments 
+        INNER JOIN users ON comments.userId = users.userId
+        WHERE comments.postId = posts.postId) AS comments
       FROM 
           posts
       INNER JOIN 
