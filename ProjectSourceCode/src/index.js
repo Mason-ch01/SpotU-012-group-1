@@ -136,7 +136,7 @@ async function getUserProfile(req) {
 
 async function searchSong(req, songName) {
   // const clientId = getClientIdFromCookies(req);
-  const clientId = 'BQB70RLU7n0Fr9QiX5EvvBMoVGw5cz18mngauxBu80voHfDLFr2rLjp84AmdrOQu0auAL30V8yNWV2UtyWwKE8NTL1DxeKP9SasafRWuXmS8KrTA14CN3YLEqc3TCKGHQfbgzEdMy0dmKLgrZmWZEyPGWEci4-0apCBzrrwcJ0xM__PxYTXrPcKuMuH3jMiMIjzLFW9V_iFOIhbEfja-ucI8E2tucimrSCEj0VNVr1F5_C1isMNvofCsjkeVxIMla20MHzH2zdRDEqCL-R3ahLAJC6HE_Ava';
+  const clientId = 'BQB6w_YfPgjwL5hY8nIeCdSmFq1QopegUkV28mfAOLzEglYTZWdB9GkFxmwRH6Sgw8TN86XiL3m4F3M0apAdFiwtkjW45O1-5nPNrt07PYXiIsiA83uf0hhDrWoq-FILm9z8BEF4GDaetyyHG0pK_TjC9_QdyQKiiVSPOxjtUJgU5p8zvW2S9oCB8v7IqYyGmU2J0Qug1ZAQGlTJrxVL4jAbdpo3lgL8SdqUPY54zX8kwSDwuNFtPVsZ7fGSXPa_feeF_r_0S0SPx8CbTQ4oLesbX92aGsPC';
   if (!clientId) {
     console.log("Error getting clientId from cookie");
     return null;
@@ -151,7 +151,7 @@ async function searchSong(req, songName) {
       params: {
         q: songName,
         type: 'track',
-        limit: 20
+        limit: 50
       }
     });
     return response.data.tracks.items;
