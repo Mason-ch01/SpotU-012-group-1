@@ -17,7 +17,7 @@ const hbs = handlebars.create({
 });
 // database configuration
 const dbConfig = {
-  host: 'dpg-csvofntds78s73enunc0-a', // the database server
+  host: 'db',
   port: 5432, // the database port
   database: process.env.POSTGRES_DB, // the database name
   user: process.env.POSTGRES_USER, // the user account to connect with
@@ -102,10 +102,8 @@ app.get('/spotify_callback', async function (req, res) {
         'Content-Type': 'application/x-www-form-urlencoded'
       }
     })
-    //return access token
-    console.log(response.data.access_token)
     res.cookie("clientId", response.data.access_token)
-    res.redirect("/")
+    res.redirect("/explore")
   }
 });
 
@@ -135,8 +133,7 @@ async function getUserProfile(req) {
 }
 
 async function searchSong(req, songName) {
-  // const clientId = getClientIdFromCookies(req);
-  const clientId = 'BQB6w_YfPgjwL5hY8nIeCdSmFq1QopegUkV28mfAOLzEglYTZWdB9GkFxmwRH6Sgw8TN86XiL3m4F3M0apAdFiwtkjW45O1-5nPNrt07PYXiIsiA83uf0hhDrWoq-FILm9z8BEF4GDaetyyHG0pK_TjC9_QdyQKiiVSPOxjtUJgU5p8zvW2S9oCB8v7IqYyGmU2J0Qug1ZAQGlTJrxVL4jAbdpo3lgL8SdqUPY54zX8kwSDwuNFtPVsZ7fGSXPa_feeF_r_0S0SPx8CbTQ4oLesbX92aGsPC';
+  const clientId = getClientIdFromCookies(req);
   if (!clientId) {
     console.log("Error getting clientId from cookie");
     return null;
@@ -162,6 +159,9 @@ async function searchSong(req, songName) {
 }
 
 app.get('/search-song', async (req, res) => {
+  if (!req.query.songName) {
+    return res.redirect('/search');
+  }
   const songName = req.query.songName;
   const tracks = await searchSong(req, songName);
   console.log(tracks);
@@ -204,7 +204,7 @@ app.post('/login', async (req, res) => {
   req.session.user = user;
   req.session.save();
 
-  res.redirect('/explore');// redirect to home page if successful login?
+  res.redirect('/spotify_connect');// redirect to spotify connect page
 });
 
 app.get('/register', (req, res) => {
