@@ -6,3 +6,4 @@ function toggleNav() {
     sideNav.classList.toggle("open");
     mainContent.classList.toggle("open");
 }
+
