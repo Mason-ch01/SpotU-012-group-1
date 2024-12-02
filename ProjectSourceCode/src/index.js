@@ -17,7 +17,7 @@ const hbs = handlebars.create({
 });
 // database configuration
 const dbConfig = {
-  host: 'db', // the database server
+  host: 'db',
   port: 5432, // the database port
   database: process.env.POSTGRES_DB, // the database name
   user: process.env.POSTGRES_USER, // the user account to connect with
@@ -70,8 +70,8 @@ app.get('/', (req, res) => {
 });
 
 
-app.get('/share', (req, res) => {
-  res.render('pages/share');
+app.get('/search', (req, res) => {
+  res.render('pages/search');
 });
 
 app.get('/spotify_connect', function (req, res) {
@@ -85,8 +85,6 @@ app.get('/spotify_connect', function (req, res) {
     `redirect_uri=${redirect_uri}&`
   );
 });
-
-
 
 app.get('/spotify_callback', async function (req, res) {
   var code = req.query.code || null;
@@ -109,10 +107,8 @@ app.get('/spotify_callback', async function (req, res) {
         'Content-Type': 'application/x-www-form-urlencoded'
       }
     })
-    //return access token
-    console.log(response.data.access_token)
     res.cookie("clientId", response.data.access_token)
-    res.redirect("/")
+    res.redirect("/explore")
   }
 });
 
@@ -147,6 +143,7 @@ async function searchSong(req, songName) {
     console.log("Error getting clientId from cookie");
     return null;
   }
+
   const url = "https://api.spotify.com/v1/search";
   try {
     const response = await axios.get(url, {
@@ -156,7 +153,7 @@ async function searchSong(req, songName) {
       params: {
         q: songName,
         type: 'track',
-        limit: 20
+        limit: 50
       }
     });
     return response.data.tracks.items;
@@ -165,6 +162,20 @@ async function searchSong(req, songName) {
     return null;
   }
 }
+
+app.get('/search-song', async (req, res) => {
+  if (!req.query.songName) {
+    return res.redirect('/search');
+  }
+  const songName = req.query.songName;
+  const tracks = await searchSong(req, songName);
+  console.log(tracks);
+  if (tracks) {
+    res.render('pages/search', { tracks });
+  } else {
+    res.status(500).send('Error searching for song');
+  }
+});
 
 // LOGIN ROUTES
 // render login page
@@ -198,7 +209,7 @@ app.post('/login', async (req, res) => {
   req.session.user = user;
   req.session.save();
 
-  res.redirect('/');// redirect to home page if successful login?
+  res.redirect('/spotify_connect');// redirect to spotify connect page
 });
 
 app.get('/register', (req, res) => {
@@ -243,16 +254,27 @@ app.get('/explore', async (req, res) => {
 
     const query = `
       SELECT 
-          posts.postId,
-          posts.userId AS authorId,
-          users.username AS authorUsername,
-          posts.songId,
-          songs.name AS songName,
-          songs.artist AS songArtist,
-          songs.link AS songLink,
-          posts.playlistId,
-          playlists.name AS playlistName,
-          posts.likes
+        posts.postId,
+        posts.userId AS authorId,
+        users.username AS authorUsername,
+        posts.songId,
+        songs.name AS songName,
+        songs.artist AS songArtist,
+        songs.link AS songLink,
+        posts.playlistId,
+        playlists.name AS playlistName,
+        posts.likes,
+        (SELECT json_agg(
+            json_build_object(
+                'commentId', comments.commentId,
+                'userId', comments.userId,
+                'comment', comments.comment,
+                'commentAuthor', users.username
+            )
+        )
+        FROM comments 
+        INNER JOIN users ON comments.userId = users.userId
+        WHERE comments.postId = posts.postId) AS comments
       FROM 
           posts
       INNER JOIN 
