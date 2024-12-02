@@ -300,9 +300,8 @@ input{
 .card {
   margin: auto;
   width: 50%;
-  border: 3px solid black;
+  border: 4px solid #228B22;
   padding: 10px;
-  --background: linear-gradient(to left, #355E3B 0%, black 100%);
   width: 400px;
   height: 600px;
   border-radius: 1rem;
@@ -353,11 +352,6 @@ input{
   margin-top: 25px;
   background-color: white;
  }
-
- .card-body {
-  --background: linear-gradient(to left, #355E3B 0%, black 100%);
-  background: rgba(0,0,0,0.32);
-}
 
  .card-img {
   max-width: 200px;
