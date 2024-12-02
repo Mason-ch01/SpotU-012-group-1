@@ -353,3 +353,22 @@ input{
   margin-top: 25px;
   background-color: white;
  }
+
+ .card-body {
+  --background: linear-gradient(to left, #355E3B 0%, black 100%);
+  background: rgba(0,0,0,0.32);
+}
+
+ .card-img {
+  max-width: 200px;
+  height: auto;
+ }
+
+ .card-title {
+  text-align: left;
+ }
+
+ .card-text {
+  margin: 5px;
+ }
+ 

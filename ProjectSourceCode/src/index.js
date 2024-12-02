@@ -158,6 +158,7 @@ async function searchSong(req, songName) {
   } catch (error) {
     console.log("Error searching for song:", error.message);
     return null;
+    
   }
 }
 
@@ -235,6 +236,7 @@ app.get('/explore', async (req, res) => {
     //Change this to req.session.userId in the future 
     const userId = 1;
 
+
     const query = `
       SELECT 
           posts.postId,
@@ -244,6 +246,7 @@ app.get('/explore', async (req, res) => {
           songs.name AS songName,
           songs.artist AS songArtist,
           songs.link AS songLink,
+          songs.image_url AS songImage,
           posts.playlistId,
           playlists.name AS playlistName,
           posts.likes
@@ -264,6 +267,21 @@ app.get('/explore', async (req, res) => {
       `;
 
     const posts = await db.any(query, [userId]);
+
+    // Fetch song images from Spotify API
+    for (const post of posts) {
+      try {
+        const songName = post.songname;
+        const songs = await searchSong(req, songName);
+        const song = songs?.[0]; // Take the first result
+        if (song && song.album && song.album.images) {
+          post.songimage = song.album.images[0].url;
+        }
+      } catch (error) {
+        console.error(`Failed to fetch image for song "${post.songname}":`, error);
+        post.songimage = null; // Gracefully handle API failures
+      }
+    }
 
     console.log(posts);
 
