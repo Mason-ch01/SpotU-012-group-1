@@ -107,6 +107,8 @@ app.get('/spotify_callback', async function (req, res) {
         'Content-Type': 'application/x-www-form-urlencoded'
       }
     })
+    //return access token
+    console.log(response.data.access_token)
     res.cookie("clientId", response.data.access_token)
     res.redirect("/explore")
   }
@@ -139,6 +141,8 @@ async function getUserProfile(req) {
 
 async function searchSong(req, songName) {
   const clientId = getClientIdFromCookies(req);
+  console.log(getClientIdFromCookies(req));
+  // const clientId = 'BQD_uvAz5AnfE6gbyBHizNfYkgNJdkVAsOvMe1MWpgbdgUIx9kdslpJ9YY6sTTvExIjm8wb8Xdg-0JMdRINt8MAS4W0dXpfGVlnehKz12OmjJSKalIyojp8mGb0fVZjk7Mo0qNKWyUbE00--0uAneNL-YP2vVBEBhtreJfObmlAOqn7gV_dm-CpouqNu5bvRgQlRnw0cOoDbSaxZt44_djBEoUBRGHArYQHJHB0LfIYaf4B5SSaoBnZX3WmnVqTCsuq1ochEwv_G-cmP';
   if (!clientId) {
     console.log("Error getting clientId from cookie");
     return null;
