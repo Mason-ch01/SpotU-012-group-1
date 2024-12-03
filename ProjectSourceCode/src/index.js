@@ -17,7 +17,7 @@ const hbs = handlebars.create({
 });
 // database configuration
 const dbConfig = {
-  host: 'dpg-csvofntds78s73enunc0-a', // the database server
+  host: 'dpg-csvofntds78s73enunc0-a', // the database server 
   port: 5432, // the database port
   database: process.env.POSTGRES_DB, // the database name
   user: process.env.POSTGRES_USER, // the user account to connect with
@@ -105,7 +105,7 @@ app.get('/spotify_callback', async function (req, res) {
     //return access token
     console.log(response.data.access_token)
     res.cookie("clientId", response.data.access_token)
-    res.redirect("/")
+    res.redirect("/explore")
   }
 });
 
@@ -116,6 +116,7 @@ function getClientIdFromCookies(req) {
 
 async function getUserProfile(req) {
   const clientId = getClientIdFromCookies(req);
+  
   if (!clientId) {
     console.log("Error getting clientId from cookie");
     return null;
@@ -135,8 +136,9 @@ async function getUserProfile(req) {
 }
 
 async function searchSong(req, songName) {
-  // const clientId = getClientIdFromCookies(req);
-  const clientId = 'BQB6w_YfPgjwL5hY8nIeCdSmFq1QopegUkV28mfAOLzEglYTZWdB9GkFxmwRH6Sgw8TN86XiL3m4F3M0apAdFiwtkjW45O1-5nPNrt07PYXiIsiA83uf0hhDrWoq-FILm9z8BEF4GDaetyyHG0pK_TjC9_QdyQKiiVSPOxjtUJgU5p8zvW2S9oCB8v7IqYyGmU2J0Qug1ZAQGlTJrxVL4jAbdpo3lgL8SdqUPY54zX8kwSDwuNFtPVsZ7fGSXPa_feeF_r_0S0SPx8CbTQ4oLesbX92aGsPC';
+  const clientId = getClientIdFromCookies(req);
+  // const clientId = 'BQBuljM1me_sdKBB8vG7_dbYs_NQ-ttqWKPNZemyvGcX5H3U1msJQbC5a-pfcrILkrojyTtN92XG5WVVyC9Qjb0Ok6MmhZQALA5tCvMkN5qhTepQCfI8BR90ngJ5gs8JE_XY13ivYcXx_rU_VadKxHJz7PnWeTkjRX5SNCQQG9FQxkjKFNOV20rGXcdJrSer31iJw8SlhDknwYlIT1NhLtTOr93LqKcrX_TioLHTK0eO546SEkz73rpZg6TWq-sYb5ZL5cIYmvdEF2Q_KK0YRRhYdPz0IlG0';
+  console.log(clientId);
   if (!clientId) {
     console.log("Error getting clientId from cookie");
     return null;
@@ -204,7 +206,7 @@ app.post('/login', async (req, res) => {
   req.session.user = user;
   req.session.save();
 
-  res.redirect('/explore');// redirect to home page if successful login?
+  res.redirect('/spotify_connect');// redirect to home page if successful login?
 });
 
 app.get('/register', (req, res) => {
