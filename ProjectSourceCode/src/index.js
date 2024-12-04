@@ -17,7 +17,7 @@ const hbs = handlebars.create({
 });
 // database configuration
 const dbConfig = {
-  host: 'db',
+  host: 'dpg-csvofntds78s73enunc0-a', // the database server
   port: 5432, // the database port
   database: process.env.POSTGRES_DB, // the database name
   user: process.env.POSTGRES_USER, // the user account to connect with
@@ -141,8 +141,7 @@ async function getUserProfile(req) {
 
 async function searchSong(req, songName) {
   const clientId = getClientIdFromCookies(req);
-  console.log(getClientIdFromCookies(req));
-  // const clientId = 'BQD_uvAz5AnfE6gbyBHizNfYkgNJdkVAsOvMe1MWpgbdgUIx9kdslpJ9YY6sTTvExIjm8wb8Xdg-0JMdRINt8MAS4W0dXpfGVlnehKz12OmjJSKalIyojp8mGb0fVZjk7Mo0qNKWyUbE00--0uAneNL-YP2vVBEBhtreJfObmlAOqn7gV_dm-CpouqNu5bvRgQlRnw0cOoDbSaxZt44_djBEoUBRGHArYQHJHB0LfIYaf4B5SSaoBnZX3WmnVqTCsuq1ochEwv_G-cmP';
+  // const clientId = 'BQB6w_YfPgjwL5hY8nIeCdSmFq1QopegUkV28mfAOLzEglYTZWdB9GkFxmwRH6Sgw8TN86XiL3m4F3M0apAdFiwtkjW45O1-5nPNrt07PYXiIsiA83uf0hhDrWoq-FILm9z8BEF4GDaetyyHG0pK_TjC9_QdyQKiiVSPOxjtUJgU5p8zvW2S9oCB8v7IqYyGmU2J0Qug1ZAQGlTJrxVL4jAbdpo3lgL8SdqUPY54zX8kwSDwuNFtPVsZ7fGSXPa_feeF_r_0S0SPx8CbTQ4oLesbX92aGsPC';
   if (!clientId) {
     console.log("Error getting clientId from cookie");
     return null;
