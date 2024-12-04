@@ -6,7 +6,7 @@ CREATE TABLE IF NOT EXISTS users(
     spotifyClientID VARCHAR(200),
     firstName VARCHAR(50) NOT NULL,
     lastName VARCHAR(50) NOT NULL,
-    profilePhoto VARCHAR(255) --profile photo
+    profile_photo VARCHAR(255) --profile photo
 );
 
 CREATE TABLE IF NOT EXISTS followers(

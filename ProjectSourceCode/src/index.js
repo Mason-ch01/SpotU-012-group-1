@@ -17,7 +17,7 @@ const hbs = handlebars.create({
 });
 // database configuration
 const dbConfig = {
-  host: 'dpg-csvofntds78s73enunc0-a', // the database server
+  host: 'db', // the database server dpg-csvofntds78s73enunc0-a
   port: 5432, // the database port
   database: process.env.POSTGRES_DB, // the database name
   user: process.env.POSTGRES_USER, // the user account to connect with
@@ -314,6 +314,7 @@ app.get('/explore', async (req, res) => {
         SELECT 
             u.userId, 
             u.username AS username, 
+            u.profile_photo as profile_photo,
             COALESCE(f.follower_count, 0) AS follower_count, 
             COALESCE(g.following_count, 0) AS following_count,
             p.postId,
@@ -358,19 +359,45 @@ app.get('/explore', async (req, res) => {
     `;
 
     console.log(username)
+
     
     const user_info = await db.any(query, [username]);
     const posts = await db.any(posts_query, [username]);
 
-    console.log(user_info[0]);
+    
 
     res.render('pages/profile', {user_info: user_info[0], posts: posts });
+
+    console.log('User Info:', user_info);
+
 
   } catch (err) {
     console.error(err);
     res.status(500).send('Server Error');
   }
 });
+
+app.post('/profile/:username/updatepfp', async (req, res) => {
+  const { profile_photo } = req.body;
+  const { username } = req.params;
+
+  try {
+      const query = `
+          UPDATE users
+          SET profile_photo = $1
+          WHERE username = $2
+      `;
+      await db.none(query, [profile_photo, username]);
+      res.json({ success: true });
+  } catch (err) {
+      console.error(err);
+      res.status(500).send('Server Error');
+  }
+});
+
+
+
+
 
   
   app.get('/edit', (req, res) => {

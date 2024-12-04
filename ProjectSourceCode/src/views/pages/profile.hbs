@@ -6,7 +6,7 @@
             </div>
             <div class="profile-username col">
                 <b>
-                    <h2>{{user_info.username}}</h2>
+                    <h2 id="username">{{user_info.username}}</h2>
                 </b>
             </div>
 
@@ -22,18 +22,18 @@
                                     aria-label="Close"></button>
                             </div>
                             <div class="modal-body">
-                                <select class="form-select"   id="image" required onchange="updateLocationOptions(this.value)">
+                                <select class="form-select"   id="image" required onchange="updateProfilePhoto()">
                                     <option value="default.png" default>Default</option>
                                     <option value="dragon.jpg">Dragon</option>
                                     <option value="monkey.jpg" >Monkey</option>
                                     <option value="panda.jpg">Panday</option>
                                     <option value="skull.jpg">Skull</option>
-                                    <option value="smiley.png">Smiley</option>
+                                    <option value="smiley.jpg">Smiley</option>
                                 </select>
                             </div>
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                <button type="button" class="btn btn-primary">Save changes</button>
+                               <button type="button" class="btn btn-primary" id="pfp" onclick="saveProfilePhoto(pfp)" data-bs-dismiss="modal">Save changes</button>
                             </div>
                         </div>
                     </div>
@@ -45,7 +45,7 @@
 
     </div>
     <div class="container text-center mt-5 mb-5">
-        <img src="../../../resources/profilePhotos/default.png" alt="Profile Image" class="profile-img">
+        <img src="../../../resources/profilePhotos/{{#if user_info.profile_photo}}{{user_info.profile_photo}}{{else}}default.png{{/if}}" alt="Profile Image" class="profile-img" >
     </div>
 
     <div class="row text-center mt-3 mb-5">
@@ -315,7 +315,7 @@
 
 
 
-            <div class="list-group playlist">
+            {{!-- <div class="list-group playlist">
                 <a href="#" class="list-group-item list-group-item-action playlist-title" aria-current="true">
                     <b>Playlists</b>
                 </a>
@@ -323,6 +323,6 @@
                 <a href="#" class="list-group-item list-group-item-action">A third link item</a>
                 <a href="#" class="list-group-item list-group-item-action">A fourth link item</a>
                 <a class="list-group-item list-group-item-action disabled" aria-disabled="true">A disabled link item</a>
-            </div>
+            </div> --}}
 
 </body>
