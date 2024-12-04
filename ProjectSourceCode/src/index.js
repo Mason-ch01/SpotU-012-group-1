@@ -17,7 +17,7 @@ const hbs = handlebars.create({
 });
 // database configuration
 const dbConfig = {
-  host: 'db', // the database server
+  host: 'dpg-csvofntds78s73enunc0-a', // the database server
   port: 5432, // the database port
   database: process.env.POSTGRES_DB, // the database name
   user: process.env.POSTGRES_USER, // the user account to connect with
@@ -61,7 +61,12 @@ app.use(
 const redirect_uri = 'http://localhost:3000/spotify_callback';
 
 app.get('/', (req, res) => {
-  res.redirect('/login');
+  if(!req.session.user){
+    res.redirect('/login');
+  }
+  else{
+    res.redirect('/explore')
+  }
 });
 
 
@@ -151,7 +156,7 @@ async function searchSong(req, songName) {
       params: {
         q: songName,
         type: 'track',
-        limit: 50
+        limit: 12
       }
     });
     return response.data.tracks.items;
@@ -162,6 +167,9 @@ async function searchSong(req, songName) {
 }
 
 app.get('/search-song', async (req, res) => {
+  if (!req.query.songName) {
+    return res.redirect('/search');
+  }
   const songName = req.query.songName;
   const tracks = await searchSong(req, songName);
   console.log(tracks);
@@ -204,7 +212,7 @@ app.post('/login', async (req, res) => {
   req.session.user = user;
   req.session.save();
 
-  res.redirect('/spotify_callback');// redirect to home page if successful login?
+  res.redirect('/spotify_connect');// redirect to spotify connect page
 });
 
 app.get('/register', (req, res) => {
@@ -238,7 +246,8 @@ app.get('/new_posts', (req, res) => {
 });
 
 app.post('/new_posts', (req, res) => {
-  
+  const songname = req.body.Song_Name;
+  searchSong(req, songname)
 });
 
 app.get('/explore', async (req, res) => {
