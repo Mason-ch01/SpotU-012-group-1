@@ -157,7 +157,7 @@ async function searchSong(req, songName) {
       params: {
         q: songName,
         type: 'track',
-        limit: 50
+        limit: 12
       }
     });
     return response.data.tracks.items;

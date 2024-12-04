@@ -6,3 +6,6 @@ function toggleNav() {
     sideNav.classList.toggle("open");
     mainContent.classList.toggle("open");
 }
+function new_post(song){
+    console.log(song.name)
+}

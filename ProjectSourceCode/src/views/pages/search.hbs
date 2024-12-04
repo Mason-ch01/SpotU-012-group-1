@@ -14,7 +14,9 @@
         <div class="card-body">
             <h5 class="card-title">{{this.name}}</h5>
             <p class="card-text">Artist(s): {{#each this.artists}}{{this.name}}{{#unless @last}}, {{/unless}}{{/each}}</p>
-            <a href={{this.uri}}>Listen Here</a>
+            <a href={{this.uri}}>Listen Here</a><br>
+            <button onclick="new_post("{{this}}")">Create New Post</button>
+
         </div>
         </div>
     </div>
