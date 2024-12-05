@@ -1,109 +1,137 @@
 <div class="container text-center mt-5 mb-2">
     <div class="row">
-        <!-- Profile image and username -->
-        <div class="col-md-4">
-            <img src="../../../resources/profilePhotos/{{#if user_info.profile_photo}}{{user_info.profile_photo}}{{else}}default.png{{/if}}" alt="Profile Image" class="profile-img">
-            <br>
-            <h2 id="username" style="color: white">{{user_info.username}}</h2>
+        <div class="col">
         </div>
-
-        <!-- Following and Followers count -->
-        <div class="col-md-4">
-            <div class="black-box">
-                Followed: {{user_info.following_count}}
-            </div>
+        <div class="profile-username col">
+            <b>
+                <h2 id="username">{{user_info.username}}</h2>
+            </b>
         </div>
-
-        {{#if currentUser}}
-        <!-- Follow button for the current user -->
-        <div class="col-md-4">
-            <button type="button" id="follow" class="btn follower">Follow</button>
-        </div>
-        {{/if}}
-
-        <div class="col-md-4">
-            <div class="black-box">
-                Followers: {{user_info.follower_count}}
-            </div>
-        </div>
-    </div>
-
-    <!-- Update Profile Picture button under username -->
-    <div class="row">
-        <div class="col-md-4 offset-md-4 text-center mt-3">
-            <button id="updatepfpbutton" class="btn btn-info" data-bs-toggle="modal" data-bs-target="#exampleModal">Update PFP</button>
-        </div>
-    </div>
-</div>
-
-<!-- Modal for updating profile photo -->
-<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h1 class="modal-title fs-5" id="exampleModalLabel">Update PFP</h1>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <select class="form-select" id="image" required onchange="updateProfilePhoto()">
-                    <option value="default.png" default>Default</option>
-                    <option value="dragon.jpg">Dragon</option>
-                    <option value="monkey.jpg">Monkey</option>
-                    <option value="panda.jpg">Pandy</option>
-                    <option value="skull.jpg">Skull</option>
-                    <option value="smiley.jpg">Smiley</option>
-                </select>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary" id="pfp" onclick="saveProfilePhoto(pfp)" data-bs-dismiss="modal">Save changes</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Posts Section -->
-<div class="container d-flex justify-content-center flex-wrap">
-    {{#if posts.length}}
-    <div class="row">
-        {{!-- {{#each posts}}
-        <div class="col-md-4 mb-4">
-            <div class="card h-100" style="background-color: rgba(255,255,255,0.13);">
-                <div class="card-body">
-                    <h5 class="card-title" style="color: white;"><strong>{{this.authorusername}}</strong></h5>
-                    {{#if songname}}
-                    <p class="card-text" style="color: white;">
-                        <strong>Song:</strong> {{this.songname}} <br>
-                        <a href="{{this.songlink}}">Listen Here</a> <br>
-                    </p>
-                    {{/if}}
-                    {{#if playlistname}}
-                    <p class="card-text" style="color: white;">
-                        <strong>Playlist Name:</strong> {{this.playlistname}} <br>
-                    </p>
-                    {{/if}}
-                    <p style="color: white"><strong>Likes:</strong> {{this.likes}}</p>
-                </div>
-            </div>
-        </div>
-        {{/each}} --}}
-        {{#each posts}}
-            <div class="col-md-4">
-                <div class="card" style="width: auto; height: 15cm;">
-                    <img src="{{this.albumimageurl}}" class="card-img-top" alt="{{this.songname}}">
-                    <div class="card-body">
-                        <h5 class="card-title" style="background-color: transparent">{{this.songname}}</h5>
-                        <br>
-                        <a href={{this.songuri}}>
-                            <button type="button" class="btn btn-light">Listen Here</button>
-                        </a>
+        <div class="col text-right">
+            <button id="updatepfpbutton" class="btn btn-info" data-bs-toggle="modal"
+                data-bs-target="#exampleModal">Update PFP</button>
+            <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel"
+                aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h1 class="modal-title fs-5" id="exampleModalLabel">Update PFP</h1>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <select class="form-select" id="image" onchange="updateProfilePhoto()">
+                                <option value="default.png">Default</option>
+                                <option value="dragon.jpg">Dragon</option>
+                                <option value="monkey.jpg">Monkey</option>
+                                <option value="panda.jpg">Panday</option>
+                                <option value="skull.jpg">Skull</option>
+                                <option value="smiley.jpg">Smiley</option>
+                            </select>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            <button type="button" class="btn btn-primary" onclick="saveProfilePhotoBtn()">Save
+                                changes</button>
+                        </div>
                     </div>
                 </div>
             </div>
-        {{/each}}
+        </div>
     </div>
-    {{else}}
-    <p>You haven't posted yet</p>
-    {{/if}}
 </div>
 
+<div class="container text-center mt-5 mb-5">
+    <img id="profile-img"
+        src="../../../resources/profilePhotos/{{#if user_info.profile_photo}}{{user_info.profile_photo}}{{else}}default.png{{/if}}"
+        alt="Profile Image" class="profile-img">
+</div>
+
+<div class="row text-center mt-3 mb-5">
+    <div class="col-4 text-center">
+        <div class="black-box">
+            Followed: {{followingCount}}
+        </div>
+    </div>
+    <div class="col-4 text-center">
+        <button type="button" id="follow" class="btn follower">Follow</button>
+    </div>
+    <div class="col-4 text-center">
+        <div class="black-box">
+            Followers: {{followersCount}}
+        </div>
+    </div>
+</div>
+
+<h1 style="color:white">Your Posts</h1>
+<div class="container d-flex justify-content-center flex-wrap">
+    {{#if posts.length}}
+    <ul>
+        {{#each posts}}
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 d-flex flex-column" style="background-color: rgba(255,255,255,0.13); width: 600px;">
+                <div class="card-body d-flex flex-column">
+                    <!-- Author Username -->
+                    <h5 class="card-text" style="color: white;">
+                        <strong>{{this.authorusername}}</strong>
+                    </h5><br>
+                    <!-- Song and Playlist Details (if any) -->
+                    <div class="d-flex align-items-start">
+                        {{#if songimage}}
+                        <img src="{{this.songimage}}" alt="song-image" class="card-img" />
+                        {{/if}}
+                        <div style="text-align: left;">
+                            {{#if songname}}
+                            <p class="card-text" style="color: white;">
+                                <strong style="font-size: 24px; margin-left: 8px">{{this.songname}}</strong>
+                            <p style="color:white; text-align: left; margin-left: 16px; line-height: 0.8;">
+                                {{this.songartist}}
+                            </p>
+                            <a href="{{this.songlink}}" style="margin-left: 15px; line-height: 0.8;"
+                                target="_blank">Listen Here</a>
+                            </p>
+                            {{/if}}
+
+                            {{#if playlistname}}
+                            <p class="card-text" style="color: white;">
+                                <strong>Playlist Name:</strong> {{this.playlistname}} <br>
+                            </p>
+                            {{/if}}
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-center align-items-center position-relative">
+                        <!-- Comment Section -->
+                        <div class="comment-section-container">
+                            <input type="checkbox" id="toggle-comments-{{this.postid}}" class="toggle-checkbox">
+                            <label for="toggle-comments-{{this.postid}}" class="comment-toggle-button">Comments</label>
+
+                            <div class="comment-section">
+                                <form method="POST" action="/new_comment">
+                                    <input type="hidden" name="postId" value="{{this.postid}}">
+                                    <textarea name="comment" placeholder="Add a comment..."
+                                        class="comment-input"></textarea>
+                                    <button type="submit" class="submit-comment-button">Post Comment</button>
+                                </form>
+                                {{#if this.comments}}
+                                <ul>
+                                    {{#each this.comments}}
+                                    <li style="color: white">{{this.comment}} - {{this.commentAuthor}}</li>
+                                    {{/each}}
+                                </ul>
+                                {{else}}
+                                <div class="comments-list">
+                                    <p>No comments yet.</p>
+                                </div>
+                                {{/if}}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {{/each}}
+    </ul>
+    {{else}}
+    <p>No post made yet</p>
+    {{/if}}
+</div>

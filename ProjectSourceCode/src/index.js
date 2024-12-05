@@ -9,6 +9,10 @@ const bodyParser = require('body-parser');
 const session = require('express-session'); // To set the session object. To store or access session data, use the `req.session`, which is (generally) serialized as JSON by the store.
 const bcrypt = require('bcryptjs'); //  To hash passwords
 
+Handlebars.registerHelper('json', function (context) {
+  return JSON.stringify(context);
+});
+
 // create `ExpressHandlebars` instance and configure the layouts and partials dir.
 const hbs = handlebars.create({
   extname: 'hbs',
@@ -60,18 +64,82 @@ app.use(
 
 const redirect_uri = 'http://localhost:3000/spotify_callback';
 
-app.get('/', (req, res) => {
-  if(!req.session.user){
-    res.redirect('/login');
+function isAuthenticated(req, res, next) {
+  if (!req.session.userId) {
+    return res.redirect('/login');
   }
-  else{
-    res.redirect('/explore')
+  next();
+}
+
+app.get('/', (req, res) => {
+  const loggedIn = Boolean(req.session.userId);  // Convert to Boolean to ensure it's true/false
+  if (!req.session.userId) {
+    return res.redirect('/login');  // If not logged in, redirect to login
+  } else {
+    return res.redirect('/explore');  // If logged in, redirect to 'explore'
   }
 });
 
+// LOGIN ROUTES
+// render login page
+app.get('/login', (req, res) => {
+  res.render('pages/login');
+});
 
-app.get('/search', (req, res) => {
-  res.render('pages/search');
+// login submission
+app.post('/login', async (req, res) => {
+  const username = req.body.username;
+  const password = req.body.password;
+
+  // look for user
+  const userQuery = 'SELECT * FROM users WHERE username = $1 LIMIT 1';
+  const user = await db.oneOrNone(userQuery, [username]);
+  if (!user) {
+    return res.render('pages/login', {
+      error: 'This User does not exist,',
+      message: 'User does not exist'
+    });
+  }
+
+  // check if password matches with username
+  const match = await bcrypt.compare(password, user.password);
+  if (!match) {
+    return res.render('pages/login', {
+      error: 'Invalid Username/Password.',
+      message: 'Invalid Username/Password'
+    });
+  }
+  req.session.userId = user.userid;
+  req.session.username = username;
+  req.session.save();
+
+  res.redirect('/spotify_connect');// redirect to spotify connect page
+});
+
+app.get('/register', (req, res) => {
+  res.render('pages/register');
+});
+
+app.post('/register', async (req, res) => {
+  const username = req.body.username;
+  const password = req.body.password;
+  const firstName = req.body.firstName;
+  const lastName = req.body.lastName;
+
+  try {
+    const hash = await bcrypt.hash(password, 10);
+    const query = 'INSERT INTO users (username, password, firstName, lastName) VALUES ($1, $2, $3, $4) RETURNING userId';
+    await db.one(query, [username, hash, firstName, lastName]);
+
+    console.log('User registered successfully.');
+    var state = "some_random_state";
+    var scope = 'user-read-private user-read-email';
+
+    res.redirect('/spotify_connect');
+  } catch (error) {
+    console.error('Error during registration:', error);
+    res.redirect('/register');
+  }
 });
 
 app.get('/spotify_connect', function (req, res) {
@@ -110,8 +178,18 @@ app.get('/spotify_callback', async function (req, res) {
     //return access token
     console.log(response.data.access_token)
     res.cookie("clientId", response.data.access_token)
-    res.redirect("/explore")
+    res.redirect("/")
   }
+});
+
+app.use(isAuthenticated);
+
+app.get('/welcome', (req, res) => {
+  res.json({ status: 'success', message: 'Welcome!' });
+});
+
+app.get('/search', (req, res) => {
+  res.render('pages/search');
 });
 
 function getClientIdFromCookies(req) {
@@ -139,9 +217,28 @@ async function getUserProfile(req) {
   }
 }
 
+let storedTracks = [];
+
+app.get('/search-song', async (req, res) => {
+  if (!req.query.songName) {
+    return res.redirect('/search');
+  }
+
+  const songName = req.query.songName;
+  const tracks = await searchSong(req, songName);
+
+  if (tracks) {
+    // Temporarily store the tracks in-memory
+    storedTracks = tracks; // Overwrite stored tracks with new search results
+
+    res.render('pages/search', { tracks });
+  } else {
+    res.status(500).send('Error searching for song');
+  }
+});
+
 async function searchSong(req, songName) {
   const clientId = getClientIdFromCookies(req);
-  // const clientId = 'BQB6w_YfPgjwL5hY8nIeCdSmFq1QopegUkV28mfAOLzEglYTZWdB9GkFxmwRH6Sgw8TN86XiL3m4F3M0apAdFiwtkjW45O1-5nPNrt07PYXiIsiA83uf0hhDrWoq-FILm9z8BEF4GDaetyyHG0pK_TjC9_QdyQKiiVSPOxjtUJgU5p8zvW2S9oCB8v7IqYyGmU2J0Qug1ZAQGlTJrxVL4jAbdpo3lgL8SdqUPY54zX8kwSDwuNFtPVsZ7fGSXPa_feeF_r_0S0SPx8CbTQ4oLesbX92aGsPC';
   if (!clientId) {
     console.log("Error getting clientId from cookie");
     return null;
@@ -156,109 +253,90 @@ async function searchSong(req, songName) {
       params: {
         q: songName,
         type: 'track',
-        limit: 20
+        limit: 36
       }
     });
     return response.data.tracks.items;
   } catch (error) {
     console.log("Error searching for song:", error.message);
     return null;
-    
   }
 }
 
-app.get('/search-song', async (req, res) => {
-  if (!req.query.songName) {
-    return res.redirect('/search');
+app.get('/get-track-details', async (req, res) => {
+  const trackId = req.query.trackId; // Get the trackId from the query parameter
+
+  if (!trackId) {
+    return res.status(400).send('Track ID is required');
   }
-  const songName = req.query.songName;
-  const tracks = await searchSong(req, songName);
-  if (tracks) {
-    res.render('pages/search', { tracks });
+
+  const new_post_details = await getTrackDetails(req, trackId);
+  if (new_post_details) {
+    // Render a new page with the track details
+    const currentUsername = req.session.username
+    const trackImageUrl = new_post_details.album.images.length > 0 ? new_post_details.album.images[0].url : '';
+    res.render('pages/new_posts', {
+      track: new_post_details,
+      track_image: trackImageUrl,
+      username: currentUsername
+    });
   } else {
-    res.status(500).send('Error searching for song');
+    res.status(500).send('Error fetching track details');
   }
 });
 
-// LOGIN ROUTES
-// render login page
-app.get('/login', (req, res) => {
-  res.render('pages/login');
-});
+// Function to fetch detailed information about a track from Spotify API
+async function getTrackDetails(req, trackId) {
+  const clientId = getClientIdFromCookies(req);
+  if (!clientId) {
+    console.log("Error getting clientId from cookie");
+    return null;
+  }
 
-// login submission
-app.post('/login', async (req, res) => {
-  const username = req.body.username;
-  const password = req.body.password;
-
-  // look for user
-  const userQuery = 'SELECT * FROM users WHERE username = $1 LIMIT 1';
-  const user = await db.oneOrNone(userQuery, [username]);
-  if (!user) {
-    return res.render('pages/login', {
-      error: 'This User does not exist,',
-      message: 'User does not exist'
+  const url = `https://api.spotify.com/v1/tracks/${trackId}`;
+  try {
+    const response = await axios.get(url, {
+      headers: {
+        'Authorization': `Bearer ${clientId}`
+      }
     });
+    return response.data; // Return the detailed track information
+  } catch (error) {
+    console.log("Error fetching track details:", error.message);
+    return null;
   }
+}
 
-  // check if password matches with username
-  const match = await bcrypt.compare(password, user.password);
-  if (!match) {
-    return res.render('pages/login', {
-      error: 'Invalid Username/Password.',
-      message: 'Invalid Username/Password'
-    });
-  }
-  req.session.user = user;
-  req.session.username = username;
-  res.cookie("user", user);
-  // res.cookie('user', user);
-  req.session.save();
-
-  res.redirect('/spotify_connect');// redirect to spotify connect page
-});
-
-app.get('/register', (req, res) => {
-  res.render('pages/register');
-});
-
-app.post('/register', async (req, res) => {
-  const username = req.body.username;
-  const password = req.body.password;
-  const firstName = req.body.firstName;
-  const lastName = req.body.lastName;
+app.post('/new_post', async (req, res) => {
+  const song_name = req.body.track_name;
+  const artist = req.body.track_artists;
+  const song_link = req.body.track_uri;
+  const song_image = req.body.track_image;
+  const userid = req.session.userId;
 
   try {
-    const hash = await bcrypt.hash(password, 10);
-    const query = 'INSERT INTO users (username, password, firstName, lastName) VALUES ($1, $2, $3, $4)';
-    await db.none(query, [username, hash, firstName, lastName]);
+    const songQuery = 'INSERT INTO songs (name, artist, link, image_url) VALUES ($1, $2, $3, $4) RETURNING songId';
+    const songResult = await db.one(songQuery, [song_name, artist, song_link, song_image]);
+    const songid = songResult.songid;
 
-    console.log('User registered successfully.');
-    var state = "some_random_state";
-    var scope = 'user-read-private user-read-email';
+    // Insert the post into the posts table
+    const postQuery = 'INSERT INTO posts (userId, songId, playlistId, likes) VALUES ($1, $2, $3, $4) RETURNING postId';
+    const postResult = await db.one(postQuery, [userid, songid, null, 0]);
+    console.log(postResult)
 
-    res.redirect('/spotify_connect');
-  } catch (error) {
-    console.error('Error during registration:', error);
-    res.redirect('/');
+    // Return success response
+    res.redirect('\explore')
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Failed to create song and post' });
   }
-});
-
-app.get('/new_posts', (req, res) => {
-  res.render('pages/new_posts');
-});
-
-app.post('/new_posts', (req, res) => {
-  const songname = req.body.Song_Name;
-  searchSong(req, songname)
 });
 
 app.get('/explore', async (req, res) => {
   try {
-    //Change this to req.session.userId in the future 
+    // Retrieve the userId from session
     const userId = req.session.userId;
-
-
     const query = `
       SELECT 
         posts.postId,
@@ -284,24 +362,38 @@ app.get('/explore', async (req, res) => {
         INNER JOIN users ON comments.userId = users.userId
         WHERE comments.postId = posts.postId) AS comments
       FROM 
-          posts
+        posts
       INNER JOIN 
-          users ON posts.userId = users.userId
+        users ON posts.userId = users.userId
       LEFT JOIN 
-          songs ON posts.songId = songs.songId
+        songs ON posts.songId = songs.songId
       LEFT JOIN 
-          playlists ON posts.playlistId = playlists.playlistId
+        playlists ON posts.playlistId = playlists.playlistId
       ORDER BY 
-          posts.postId DESC;
-      `;
+        posts.postId DESC;
+    `;
 
+    // Execute query
     const posts = await db.any(query, [userId]);
-    console.log(posts);
 
-    res.render('pages/explore', { posts });
+    console.log(posts)
+
+    // If there are no posts, send an empty array
+    if (!posts || posts.length === 0) {
+      return res.render('pages/explore', { posts: [] });
+    }
+
+    // Format posts and handle potential null comments
+    const formattedPosts = posts.map(post => ({
+      ...post,
+      comments: post.comments ? post.comments : []
+    }));
+
+    // Render the 'explore' page with the posts data
+    res.render('pages/explore', { posts: formattedPosts });
 
   } catch (err) {
-    console.error(err);
+    console.error('Error fetching posts:', err);
     res.status(500).send('Server Error');
   }
 });
@@ -311,12 +403,15 @@ app.post('/new_comment', async (req, res) => {
 
     const commentText = req.body.comment;
     const postId = req.body.postId;
-    const userId = req.session.user.userid; //Change this to req.session.userId in the future 
+    const userId = req.session.userId;
+    console.log(userId)
+    console.log(req.session);
 
+    console.log(commentText, postId, userId);
     // Validation
     if (!commentText || commentText.trim() === '') {
-      return res.status(400).json({ 
-        error: 'Comment cannot be empty' 
+      return res.status(400).json({
+        error: 'Comment cannot be empty'
       });
     }
 
@@ -325,153 +420,145 @@ app.post('/new_comment', async (req, res) => {
       INSERT INTO comments (userId, postId, comment) 
       VALUES ($1, $2, $3) 
       RETURNING commentId`;
-    
+
     await db.one(query, [userId, postId, commentText]);
 
     res.redirect('back');
   } catch (error) {
     console.error('Error adding comment:', error);
-    res.status(500).json({ 
-      error: 'Failed to add comment', 
-      details: error.message 
+    res.status(500).json({
+      error: 'Failed to add comment',
+      details: error.message
     });
   }
 });
-    
 
 
-  // inilize the profile page
-  app.get('/userProfile', (req, res) => {
-    const username = req.session.user.username;
-    res.redirect(`/profile/${username}`);
-  });
+// inilize the profile page
+app.get('/profile', async (req, res) => {
+  try {
+    // Retrieve the userId from the session
+    const userId = req.session.userId;
 
-  app.get('/profile/:username', async (req, res) =>{
-    try {
-    const username = req.params.username;
-
-    const query = `
+    // Query to fetch posts associated with the logged-in user
+    const postsQuery = `
         SELECT 
-            u.userId, 
-            u.username AS username, 
-            u.profile_photo as profile_photo,
-            COALESCE(f.follower_count, 0) AS follower_count, 
-            COALESCE(g.following_count, 0) AS following_count,
-            p.postId,
-            p.likes AS likes,
-            p.dislikes AS dislikes
+          posts.postId,
+          posts.userId AS authorId,
+          users.username AS authorUsername,
+          posts.songId,
+          songs.name AS songName,
+          songs.artist AS songArtist,
+          songs.link AS songLink,
+          songs.image_url AS songImage,
+          posts.playlistId,
+          playlists.name AS playlistName,
+          posts.likes,
+          (SELECT json_agg(
+              json_build_object(
+                  'commentId', comments.commentId,
+                  'userId', comments.userId,
+                  'comment', comments.comment,
+                  'commentAuthor', users.username
+              )
+          )
+          FROM comments 
+          INNER JOIN users ON comments.userId = users.userId
+          WHERE comments.postId = posts.postId) AS comments
         FROM 
-            users u
+          posts
+        INNER JOIN 
+          users ON posts.userId = users.userId
         LEFT JOIN 
-            user_follower_count f ON u.userId = f.userId
+          songs ON posts.songId = songs.songId
         LEFT JOIN 
-            user_following_count g ON u.userId = g.userId
-        LEFT JOIN 
-            posts p ON u.userId = p.userId
+          playlists ON posts.playlistId = playlists.playlistId
         WHERE 
-            u.username = $1;
-    `;
+          posts.userId = $1 
+        ORDER BY 
+          posts.postId DESC;
+      `;
 
-    const posts_query = `
-      SELECT 
-          p.postId,
-          p.userId,
-          s.songId,
-          s.name AS songName,
-          s.artist,
-          s.link AS songUri,
-          s.image_url AS albumImageUrl,
-          p.likes,
-          p.dislikes
-      FROM posts p
-      JOIN songs s ON p.songId = s.songId
-      WHERE p.userId = $1;
-    `;
+    const posts = await db.any(postsQuery, [userId]);
 
-    const test = `SELECT * FROM posts;`
+    // Query to count how many people the user is following
+    const followingCountQuery = `
+        SELECT COUNT(*) AS followingCount
+        FROM followers
+        WHERE followerId = $1;
+      `;
+    const followingCountResult = await db.one(followingCountQuery, [userId]);
+    const followingCount = followingCountResult.followingcount;
 
-    const user_info = await db.any(query, [username]);
-    const posts = await db.any(posts_query, [req.session.user.userid]);
-    let currentUser = false;
-
-    if (username === req.session.user.username){
-      currentUser = false;
-    }
-    else{
-      currentUser = true;
+    // Query to count how many people follow  the user
+    const followersCountQuery = `
+       SELECT COUNT(*) AS followersCount
+       FROM followers
+       WHERE followeeId = $1;
+     `;
+    const followersCountResult = await db.one(followersCountQuery, [userId]);
+    const followersCount = followersCountResult.followerscount;
+    // If there are no posts, send an empty array
+    if (!posts || posts.length === 0) {
+      return res.render('pages/profile', { posts: [], followingCount, followersCount });
     }
 
-    res.render('pages/profile', {user_info: user_info[0], posts: posts, currentUser, currentUser});
+    // Format posts and handle potential null comments
+    const formattedPosts = posts.map(post => ({
+      ...post,
+      comments: post.comments ? post.comments : []
+    }));
+
+    // Render the profile page with posts and following count
+    res.render('pages/profile', { posts: formattedPosts, followingCount, followersCount });
 
   } catch (err) {
-    console.error(err);
+    console.error('Error fetching posts:', err);
     res.status(500).send('Server Error');
   }
 });
 
-app.post('/profile/:username/updatepfp', async (req, res) => {
-  const { profile_photo } = req.body;
-  const { username } = req.params;
 
+app.post('/update-profile-photo', async (req, res) => {
+  const userId = req.session.userId;
+  const newProfilePhoto = req.body.newProfilePhoto;
   try {
-      const query = `
-          UPDATE users
-          SET profile_photo = $1
-          WHERE username = $2
-      `;
-      await db.none(query, [profile_photo, username]);
-      res.json({ success: true });
-  } catch (err) {
-      console.error(err);
-      res.status(500).send('Server Error');
-  }
-});
-
-app.post('/post', async (req, res) => {
-  const { songName, songUri, albumImageUrl, artist } = req.body;
-  const userId = req.session.user.userid;
-
-  try {
-    // Check if the song already exists in the database
-    const songResult = await db.any("SELECT * FROM songs WHERE link = $1;", [songUri]);
-    let songId;
-
-    if (songResult.length > 0) {
-      // Song exists, use the existing songId
-      songId = songResult[0].songId;
-    } else {
-      // Song does not exist, insert it into the `songs` table
-      const insertSongQuery = "INSERT INTO songs (name, artist, link, image_url) VALUES ($1, $2, $3, $4) RETURNING songId;";
-      const insertSongResult = await db.one(insertSongQuery, [songName, artist[0], songUri, albumImageUrl]);
-      songId = insertSongResult.songid;  // Get the songId of the newly inserted song
-    }
-
-    // Now insert a post entry into the `posts` table to associate the song with the user
-    const insertPostQuery = "INSERT INTO posts (userId, songId, likes, dislikes) VALUES ($1, $2, 0, 0);";
-    await db.none(insertPostQuery, [userId, songId]);
-
-    // Optionally, you can redirect or render a response after saving the song
-    res.redirect('/userProfile');  // Redirect to the user's profile page (or another page as needed)
-
+    // Update profile photo in the database for the given userId
+    const result = await db.any(
+      'UPDATE users SET profile_photo = $1 WHERE userId = $2 RETURNING profile_photo',
+      [newProfilePhoto, userId]
+    );
+    res.json({
+      success: true,
+      profile_photo: result[0].profile_photo,
+    });
   } catch (err) {
     console.error(err);
-    res.status(500).send('Error inserting Song');
+    res.status(500).json({ success: false, message: 'Error updating profile photo' });
   }
 });
 
 
+app.get('/edit', (req, res) => {
+  res.render('pages/edit')
+});
+// authentication
+const auth = (req, res, next) => {
+  if (!req.session.user) {
+    return res.redirect('/login');
+  }
+  next();
+};
 
-  app.get('/edit', (req, res) => {
-    res.render('pages/edit')
-  });
-  // authentication
-  const auth = (req, res, next) => {
-    if (!req.session.user) {
-      return res.redirect('/login');
+app.use(auth);
+
+app.get('/logout', (req, res) => {
+  req.session.destroy((err) => {
+    if (err) {
+      return res.status(500).send('Failed to log out.');
     }
-    next();
-  };
-  
-  app.use(auth);
+    res.redirect('/login');  // Redirect to login page after logging out
+  });
+});
 
-app.listen(3000);
+module.exports = app.listen(3000);
