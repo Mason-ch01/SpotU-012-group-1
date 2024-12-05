@@ -254,7 +254,7 @@ app.post('/new_posts', (req, res) => {
 app.get('/explore', async (req, res) => {
   try {
     //Change this to req.session.userId in the future 
-    const userId = 1;
+    const userId = req.session.userId;
 
 
     const query = `
@@ -284,15 +284,11 @@ app.get('/explore', async (req, res) => {
       FROM 
           posts
       INNER JOIN 
-          followers ON posts.userId = followers.followeeId
-      INNER JOIN 
           users ON posts.userId = users.userId
       LEFT JOIN 
           songs ON posts.songId = songs.songId
       LEFT JOIN 
           playlists ON posts.playlistId = playlists.playlistId
-      WHERE 
-          followers.followerId = $1
       ORDER BY 
           posts.postId DESC;
       `;
@@ -313,7 +309,8 @@ app.post('/new_comment', async (req, res) => {
 
     const commentText = req.body.comment;
     const postId = req.body.postId;
-    const userId = 1; //Change this to req.session.userId in the future 
+    const userId = req.session.user.userid; //Change this to req.session.userId in the future 
+    console.log(req.session);
 
     console.log(commentText, postId, userId);
     // Validation
