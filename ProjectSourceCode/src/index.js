@@ -17,7 +17,7 @@ const hbs = handlebars.create({
 });
 // database configuration
 const dbConfig = {
-  host: 'db',
+  host: 'dpg-csvofntds78s73enunc0-a', // the database server
   port: 5432, // the database port
   database: process.env.POSTGRES_DB, // the database name
   user: process.env.POSTGRES_USER, // the user account to connect with
@@ -61,7 +61,12 @@ app.use(
 const redirect_uri = 'http://localhost:3000/spotify_callback';
 
 app.get('/', (req, res) => {
-  res.redirect('/login');
+  if(!req.session.user){
+    res.redirect('/login');
+  }
+  else{
+    res.redirect('/explore')
+  }
 });
 
 
@@ -102,6 +107,8 @@ app.get('/spotify_callback', async function (req, res) {
         'Content-Type': 'application/x-www-form-urlencoded'
       }
     })
+    //return access token
+    console.log(response.data.access_token)
     res.cookie("clientId", response.data.access_token)
     res.redirect("/explore")
   }
@@ -148,7 +155,7 @@ async function searchSong(req, songName) {
       params: {
         q: songName,
         type: 'track',
-        limit: 50
+        limit: 12
       }
     });
     return response.data.tracks.items;
@@ -238,7 +245,8 @@ app.get('/new_posts', (req, res) => {
 });
 
 app.post('/new_posts', (req, res) => {
-  
+  const songname = req.body.Song_Name;
+  searchSong(req, songname)
 });
 
 app.get('/explore', async (req, res) => {
