@@ -156,7 +156,7 @@ async function searchSong(req, songName) {
       params: {
         q: songName,
         type: 'track',
-        limit: 12
+        limit: 20
       }
     });
     return response.data.tracks.items;
@@ -173,7 +173,6 @@ app.get('/search-song', async (req, res) => {
   }
   const songName = req.query.songName;
   const tracks = await searchSong(req, songName);
-  console.log(tracks);
   if (tracks) {
     res.render('pages/search', { tracks });
   } else {
@@ -211,6 +210,9 @@ app.post('/login', async (req, res) => {
     });
   }
   req.session.user = user;
+  req.session.username = username;
+  res.cookie("user", user);
+  // res.cookie('user', user);
   req.session.save();
 
   res.redirect('/spotify_connect');// redirect to spotify connect page
@@ -238,7 +240,7 @@ app.post('/register', async (req, res) => {
     res.redirect('/spotify_connect');
   } catch (error) {
     console.error('Error during registration:', error);
-    res.redirect('/register');
+    res.redirect('/');
   }
 });
 
@@ -254,7 +256,7 @@ app.post('/new_posts', (req, res) => {
 app.get('/explore', async (req, res) => {
   try {
     //Change this to req.session.userId in the future 
-    const userId = 1;
+    const userId = req.session.userId;
 
 
     const query = `
@@ -284,15 +286,11 @@ app.get('/explore', async (req, res) => {
       FROM 
           posts
       INNER JOIN 
-          followers ON posts.userId = followers.followeeId
-      INNER JOIN 
           users ON posts.userId = users.userId
       LEFT JOIN 
           songs ON posts.songId = songs.songId
       LEFT JOIN 
           playlists ON posts.playlistId = playlists.playlistId
-      WHERE 
-          followers.followerId = $1
       ORDER BY 
           posts.postId DESC;
       `;
@@ -313,9 +311,8 @@ app.post('/new_comment', async (req, res) => {
 
     const commentText = req.body.comment;
     const postId = req.body.postId;
-    const userId = 1; //Change this to req.session.userId in the future 
+    const userId = req.session.user.userid; //Change this to req.session.userId in the future 
 
-    console.log(commentText, postId, userId);
     // Validation
     if (!commentText || commentText.trim() === '') {
       return res.status(400).json({ 
@@ -344,15 +341,14 @@ app.post('/new_comment', async (req, res) => {
 
 
   // inilize the profile page
-  app.get('/profile', (req, res) => {
-    res.render('pages/profile')
+  app.get('/userProfile', (req, res) => {
+    const username = req.session.user.username;
+    res.redirect(`/profile/${username}`);
   });
 
-
-  
   app.get('/profile/:username', async (req, res) =>{
     try {
-    const { username } = req.params;
+    const username = req.params.username;
 
     const query = `
         SELECT 
@@ -377,43 +373,35 @@ app.post('/new_comment', async (req, res) => {
     `;
 
     const posts_query = `
-        SELECT 
-            posts.postId,
-            posts.userId AS authorId,
-            users.username AS authorUsername,
-            posts.songId,
-            songs.name AS songName,
-            songs.artist AS songArtist,
-            songs.link AS songLink,
-            posts.playlistId,
-            playlists.name AS playlistName,
-            posts.likes
-        FROM 
-            posts
-        INNER JOIN 
-            users ON posts.userId = users.userId
-        LEFT JOIN 
-            songs ON posts.songId = songs.songId
-        LEFT JOIN 
-            playlists ON posts.playlistId = playlists.playlistId
-        WHERE 
-            users.username = $1
-        ORDER BY 
-            posts.postId DESC;
+      SELECT 
+          p.postId,
+          p.userId,
+          s.songId,
+          s.name AS songName,
+          s.artist,
+          s.link AS songUri,
+          s.image_url AS albumImageUrl,
+          p.likes,
+          p.dislikes
+      FROM posts p
+      JOIN songs s ON p.songId = s.songId
+      WHERE p.userId = $1;
     `;
 
-    console.log(username)
+    const test = `SELECT * FROM posts;`
 
-    
     const user_info = await db.any(query, [username]);
-    const posts = await db.any(posts_query, [username]);
+    const posts = await db.any(posts_query, [req.session.user.userid]);
+    let currentUser = false;
 
-    
+    if (username === req.session.user.username){
+      currentUser = false;
+    }
+    else{
+      currentUser = true;
+    }
 
-    res.render('pages/profile', {user_info: user_info[0], posts: posts });
-
-    console.log('User Info:', user_info);
-
+    res.render('pages/profile', {user_info: user_info[0], posts: posts, currentUser, currentUser});
 
   } catch (err) {
     console.error(err);
@@ -439,11 +427,40 @@ app.post('/profile/:username/updatepfp', async (req, res) => {
   }
 });
 
+app.post('/post', async (req, res) => {
+  const { songName, songUri, albumImageUrl, artist } = req.body;
+  const userId = req.session.user.userid;
+
+  try {
+    // Check if the song already exists in the database
+    const songResult = await db.any("SELECT * FROM songs WHERE link = $1;", [songUri]);
+    let songId;
+
+    if (songResult.length > 0) {
+      // Song exists, use the existing songId
+      songId = songResult[0].songId;
+    } else {
+      // Song does not exist, insert it into the `songs` table
+      const insertSongQuery = "INSERT INTO songs (name, artist, link, image_url) VALUES ($1, $2, $3, $4) RETURNING songId;";
+      const insertSongResult = await db.one(insertSongQuery, [songName, artist[0], songUri, albumImageUrl]);
+      songId = insertSongResult.songid;  // Get the songId of the newly inserted song
+    }
+
+    // Now insert a post entry into the `posts` table to associate the song with the user
+    const insertPostQuery = "INSERT INTO posts (userId, songId, likes, dislikes) VALUES ($1, $2, 0, 0);";
+    await db.none(insertPostQuery, [userId, songId]);
+
+    // Optionally, you can redirect or render a response after saving the song
+    res.redirect('/userProfile');  // Redirect to the user's profile page (or another page as needed)
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Error inserting Song');
+  }
+});
 
 
 
-
-  
   app.get('/edit', (req, res) => {
     res.render('pages/edit')
   });
