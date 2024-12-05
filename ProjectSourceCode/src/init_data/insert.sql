@@ -17,12 +17,12 @@ INSERT INTO followers (followerId, followeeId) VALUES
 (5, 2);
 
 -- Insert test songs
-INSERT INTO songs (name, artist, link) VALUES
-('Shape of You', 'Ed Sheeran', 'https://example.com/shape-of-you'),
-('Blinding Lights', 'The Weeknd', 'https://example.com/blinding-lights'),
-('Bohemian Rhapsody', 'Queen', 'https://example.com/bohemian-rhapsody'),
-('Havana', 'Camila Cabello', 'https://example.com/havana'),
-('Stairway to Heaven', 'Led Zeppelin', 'https://example.com/stairway-to-heaven');
+INSERT INTO songs (name, artist, link, image_url) VALUES
+('Shape of You', 'Ed Sheeran', 'https://example.com/shape-of-you', 'https://i.scdn.co/image/ab67616d0000b273ba5db46f4b838ef6027e6f96'),
+('Blinding Lights', 'The Weeknd', 'https://example.com/blinding-lights', 'https://i.scdn.co/image/ab67616d0000b273ba5db46f4b838ef6027e6f96'),
+('Bohemian Rhapsody', 'Queen', 'https://example.com/bohemian-rhapsody', 'https://i.scdn.co/image/ab67616d0000b273ba5db46f4b838ef6027e6f96'),
+('Havana', 'Camila Cabello', 'https://example.com/havana', 'https://i.scdn.co/image/ab67616d0000b273ba5db46f4b838ef6027e6f96'),
+('Stairway to Heaven', 'Led Zeppelin', 'https://example.com/stairway-to-heaven', 'https://i.scdn.co/image/ab67616d0000b273ba5db46f4b838ef6027e6f96');
 
 -- Insert test playlists
 INSERT INTO playlists (name) VALUES
