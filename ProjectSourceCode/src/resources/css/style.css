@@ -354,6 +354,116 @@ input{
   background-color: white;
  }
 
+ .card-img {
+  max-width: 200px;
+  height: auto;
+ }
+
+ .card-title {
+  text-align: left;
+ }
+
+ .card-text {
+  margin: 5px;
+ }
+
+/* Comment Section */
+ .comment-section-container {
+  width: 100%;
+  max-width: 500px;
+  margin: 0 auto;
+  border-radius: 5px;
+  padding: 10px;
+  text-align: left;
+}
+
+.toggle-checkbox {
+  display: none; /* Hide the checkbox */
+}
+
+.comment-toggle-button {
+  display: inline-block;
+  width: 100%;
+  padding: 10px;
+  padding-right: 20px;
+  background-color: #007bff;
+  color: white;
+  text-align: center;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.3s ease;
+}
+
+.comment-toggle-button:hover {
+  background-color: #0056b3;
+}
+
+.comment-section {
+  max-height: 0;
+  overflow: hidden;
+  background-color: rgba(0, 0, 0, 0.15);
+  transition: max-height 0.3s ease, padding 0.3s ease;
+  padding: 0 10px;
+  opacity: 0;
+}
+
+.comment-section .comment-input,
+.comment-section .submit-comment-button {
+  display: block;
+  width: 100%;
+  margin-top: 10px;
+}
+
+.comment-input {
+  height: 60px;
+  padding: 8px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+.submit-comment-button {
+  padding: 10px;
+  background-color: #28a745;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 14px;
+  margin-top: 5px;
+}
+
+.submit-comment-button:hover {
+  background-color: #218838;
+}
+
+.comments-list {
+  margin-top: 10px;
+  font-size: 14px;
+  color: #555;
+}
+
+/* When the checkbox is checked, show the comment section */
+.toggle-checkbox:checked + .comment-toggle-button {
+  background-color: #dc3545; /* Change button color to indicate it's active */
+  color: white;
+}
+
+.toggle-checkbox:checked + .comment-toggle-button::after {
+  content: " (Hide Comments)";
+}
+
+.toggle-checkbox:checked ~ .comment-section {
+  max-height: 300px; /* Adjust to fit the content */
+  padding: 10px;
+  opacity: 1;
+}
+
+
+ 
+
 
 .profile-img {
   width: 150px; 
