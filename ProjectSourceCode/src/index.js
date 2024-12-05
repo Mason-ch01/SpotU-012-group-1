@@ -229,7 +229,7 @@ app.post('/register', async (req, res) => {
     res.redirect('/spotify_connect');
   } catch (error) {
     console.error('Error during registration:', error);
-    res.redirect('/register');
+    res.redirect('/');
   }
 });
 

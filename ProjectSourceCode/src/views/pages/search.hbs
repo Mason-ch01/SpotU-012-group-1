@@ -9,12 +9,14 @@
 <div class="row mt-4">
     {{#each tracks}}
     <div class="col-md-4">
-        <div class="card">
+        <div class="card" style="width: auto; height auto;">
         <img src="{{this.album.images.[0].url}}" class="card-img-top" alt="{{this.name}}">
         <div class="card-body">
             <h5 class="card-title">{{this.name}}</h5>
             <p class="card-text">Artist(s): {{#each this.artists}}{{this.name}}{{#unless @last}}, {{/unless}}{{/each}}</p>
-            <a href={{this.uri}}>Listen Here</a>
+            <a href={{this.uri}}>
+                <button type="button" class="btn btn-light">Listen Here</button>
+            </a>
         </div>
         </div>
     </div>
