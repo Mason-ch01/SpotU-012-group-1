@@ -59,9 +59,9 @@ INSERT INTO comments (userId, postId, comment) VALUES
 (4, 3, 'Listening to it Right now!');
 
 -- Insert into testing table `users_db`
-INSERT INTO users_db (name, dob) VALUES
-('Emily Davis', '1995-06-12'),
-('Michael Brown', '1988-09-23'),
-('Sarah Johnson', '2000-11-05'),
-('Chris Evans', '1985-02-17'),
-('Taylor Swift', '1989-12-13');
+-- INSERT INTO users_db (name, dob) VALUES
+-- ('Emily Davis', '1995-06-12'),
+-- ('Michael Brown', '1988-09-23'),
+-- ('Sarah Johnson', '2000-11-05'),
+-- ('Chris Evans', '1985-02-17'),
+-- ('Taylor Swift', '1989-12-13');

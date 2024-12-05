@@ -5,7 +5,8 @@ CREATE TABLE IF NOT EXISTS users(
     password CHAR(60) NOT NULL,
     spotifyClientID VARCHAR(200),
     firstName VARCHAR(50) NOT NULL,
-    lastName VARCHAR(50) NOT NULL
+    lastName VARCHAR(50) NOT NULL,
+    profile_photo VARCHAR(255) --profile photo
 );
 
 CREATE TABLE IF NOT EXISTS followers(
@@ -37,7 +38,17 @@ CREATE TABLE IF NOT EXISTS posts(
     userId INT REFERENCES users(userId) ON DELETE CASCADE,
     songId INT REFERENCES songs(songId),
     playlistId INT REFERENCES playlists(playlistId),
-    likes INT NOT NULL DEFAULT 0
+    likes INT NOT NULL DEFAULT 0,
+    dislikes INT NOT NULL DEFAULT 0
+);
+
+-- table that connects --
+CREATE TABLE postType (
+    userId INT REFERENCES users(userId) ON DELETE CASCADE,
+    favoriteId INT REFERENCES posts(postId),
+    weekId INT REFERENCES posts(postId),
+    monthId INT REFERENCES posts(postId),
+    yearId INT REFERENCES posts(postId)
 );
 
 CREATE TABLE IF NOT EXISTS comments(
@@ -76,10 +87,10 @@ GROUP BY u.userId, u.username;
 -- WHERE 
 --     u.username = '<username>';
 
---testing
+-- testing
 
-CREATE TABLE users_db (
-    id SERIAL PRIMARY KEY,
-    name VARCHAR(100) NOT NULL,
-    dob DATE NOT NULL
-);
+-- CREATE TABLE users (
+--     id SERIAL PRIMARY KEY,
+--     name VARCHAR(100) NOT NULL,
+--     dob DATE NOT NULL
+-- );
