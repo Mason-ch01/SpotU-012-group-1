@@ -325,7 +325,7 @@ app.post('/new_post', async (req, res) => {
     console.log(postResult)
 
     // Return success response
-    res.redirect('\explore')
+    res.redirect('/explore')
 
   } catch (err) {
     console.error(err);
