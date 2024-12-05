@@ -11,7 +11,7 @@ CREATE TABLE IF NOT EXISTS users(
 
 CREATE TABLE IF NOT EXISTS followers(
     followerId INT REFERENCES users(userId) ON DELETE CASCADE,
-    followeedId INT REFERENCES users(userId) ON DELETE CASCADE,
+    followeeId INT REFERENCES users(userId) ON DELETE CASCADE,
     PRIMARY KEY (followerId, followeeId) -- prevents duplicates
 );
 

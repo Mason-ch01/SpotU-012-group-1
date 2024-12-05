@@ -1,7 +1,8 @@
 <!-- Search Bar -->
 <div class="container mt-5" style="align-self: right; width:75%;">
     <form method="get" action="/search-song">
-        <input type="text" id="songSearch" name="songName" placeholder="Search for Songs" style="color: white; border-radius: 20px; border:none;">
+        <input type="text" id="songSearch" name="songName" placeholder="Search for Songs"
+            style="color: white; border-radius: 20px; border:none;">
     </form>
 </div>
 
@@ -13,13 +14,13 @@
             <img src="{{this.album.images.[0].url}}" class="card-img-top" alt="{{this.name}}">
             <div class="card-body">
                 <h5 class="card-text">{{this.name}}</h5>
-                <p class="card-text">Artist(s): 
-                    {{#each this.artists}} 
-                        {{this.name}}{{#unless @last}}, {{/unless}}
+                <p class="card-text">Artist(s):
+                    {{#each this.artists}}
+                    {{this.name}}{{#unless @last}}, {{/unless}}
                     {{/each}}
                 </p>
                 <a href="{{this.uri}}" target="_blank">Listen Here</a><br>
-                
+
                 <!-- Add a button to get the details of the track -->
                 <form action="/get-track-details" method="get">
                     <input type="hidden" name="trackId" value="{{this.id}}"> <!-- Send track id -->

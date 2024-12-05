@@ -8,7 +8,7 @@ const chai = require('chai'); // Chai HTTP provides an interface for live integr
 const chaiHttp = require('chai-http');
 chai.should();
 chai.use(chaiHttp);
-const {assert, expect} = chai;
+const { assert, expect } = chai;
 
 // ********************** DEFAULT WELCOME TESTCASE ****************************
 
@@ -38,18 +38,18 @@ describe('Server!', () => {
 // and expects the API to return a status of 200 along with the "Success" message.
 
 describe('Testing Add User API', () => {
-    it('positive : /add_user', done => {
-      chai
-        .request(server)
-        .post('/add_user')
-        .send({id: 5, name: 'John Doe', dob: '2020-02-20'})
-        .end((err, res) => {
-          expect(res).to.have.status(200);
-          expect(res.body.message).to.equals('Success');
-          done();
-        });
-    });
+  it('positive : /add_user', done => {
+    chai
+      .request(server)
+      .post('/add_user')
+      .send({ id: 5, name: 'John Doe', dob: '2020-02-20' })
+      .end((err, res) => {
+        expect(res).to.have.status(200);
+        expect(res.body.message).to.equals('Success');
+        done();
+      });
   });
+});
 
 // ********************************************************************************
 

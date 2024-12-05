@@ -7,32 +7,34 @@
             <div class="card-body d-flex flex-column">
                 <h5 class="card-text" style="color: white;">
                     <strong>{{username}}</strong>
-                    </h5><br>
+                </h5><br>
 
-                    <div class="d-flex align-items-start">
-                        <!-- Song Image -->
-                        <img src="{{track_image}}" alt="song-image" class="card-img"/>
-                        <div style="text-align: left;">
-                            <!-- Song Name, Artist, and Link -->
-                            <p class="card-text" style="color: white;">
-                                <strong style="font-size: 24px; margin-left: 8px">
-                                    {{track.name}}
-                                </strong>  
-                                <p style="color:white; text-align: left; margin-left: 16px; line-height: 0.8;">
-                                    {{#each track.artists}}
-                                        {{this.name}}{{#unless @last}}, {{/unless}} <!-- Track artists -->
-                                    {{/each}}
-                                </p>
-                                <a href="{{track.uri}}" style="margin-left: 15px; line-height: 0.8;">
-                                    Listen Here
-                                </a> 
-                            </p>
-                        </div>
+                <div class="d-flex align-items-start">
+                    <!-- Song Image -->
+                    <img src="{{track_image}}" alt="song-image" class="card-img" />
+                    <div style="text-align: left;">
+                        <!-- Song Name, Artist, and Link -->
+                        <p class="card-text" style="color: white;">
+                            <strong style="font-size: 24px; margin-left: 8px">
+                                {{track.name}}
+                            </strong>
+                        <p style="color:white; text-align: left; margin-left: 16px; line-height: 0.8;">
+                            {{#each track.artists}}
+                            {{this.name}}{{#unless @last}}, {{/unless}}
+                            <!-- Track artists -->
+                            {{/each}}
+                        </p>
+                        <a href="{{track.uri}}" style="margin-left: 15px; line-height: 0.8;">
+                            Listen Here
+                        </a>
+                        </p>
                     </div>
+                </div>
                 <form method="POST" action="/new_post" style="margin-top: 20px;">
                     <input type="hidden" name="track_name" value="{{track.name}}" />
-                    <input type="hidden" name="track_artists" value="{{#each track.artists}}{{this.name}}{{#unless @last}}, {{/unless}}{{/each}}" />
-                    <input type="hidden" name="track_uri" value="{{track.uri}}"/>
+                    <input type="hidden" name="track_artists"
+                        value="{{#each track.artists}}{{this.name}}{{#unless @last}}, {{/unless}}{{/each}}" />
+                    <input type="hidden" name="track_uri" value="{{track.uri}}" />
                     <input type="hidden" name="track_image" value="{{track_image}}" />
                     <button type="submit" class="btn btn-primary" style="width: 100%;">Post</button>
                 </form>

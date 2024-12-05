@@ -7,7 +7,8 @@ body {
 }
 
 /* Login and Registration Forms */
-.login_form, .new_post_form {
+.login_form,
+.new_post_form {
   height: 430px;
   width: 400px;
   background-color: rgba(255, 255, 255, 0.13);
@@ -22,7 +23,7 @@ body {
   padding: 50px 35px;
 }
 
-.registration_from{
+.registration_from {
   height: 630px;
   width: 400px;
   background-color: rgba(255, 255, 255, 0.13);
@@ -37,7 +38,8 @@ body {
   padding: 50px 35px;
 }
 
-.login_form *, .registration_from * {
+.login_form *,
+.registration_from * {
   font-family: 'Poppins', sans-serif;
   color: white;
   letter-spacing: 0.5px;
@@ -60,43 +62,47 @@ body {
   padding: 50px 35px;
 }
 
-form h3{
-    font-size: 32px;
-    font-weight: 500;
-    line-height: 42px;
-    text-align: center;
-}
-input{
-    display: block;
-    height: 50px;
-    width: 100%;
-    background-color: rgba(255,255,255,0.07);
-    border-radius: 3px;
-    padding: 0 10px;
-    font-size: 14px;
-    font-weight: 300;
+form h3 {
+  font-size: 32px;
+  font-weight: 500;
+  line-height: 42px;
+  text-align: center;
 }
 
-.login , .registration {
-    width: 100%;
-    padding: 12px;
-    background-color: #228B22;
-    color: #fff;
-    border: none;
-    border-radius: 4px;
-    font-size: 16px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
+input {
+  display: block;
+  height: 50px;
+  width: 100%;
+  background-color: rgba(255, 255, 255, 0.07);
+  border-radius: 3px;
+  padding: 0 10px;
+  font-size: 14px;
+  font-weight: 300;
 }
 
-.login:hover, .registration:hover {
-    background-color: #111;
+.login,
+.registration {
+  width: 100%;
+  padding: 12px;
+  background-color: #228B22;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.login:hover,
+.registration:hover {
+  background-color: #111;
 }
 
 /* Sidebar Styling */
 .sidenav {
-  height: 100%; 
-  width: 0; /* Sidebar starts hidden */
+  height: 100%;
+  width: 0;
+  /* Sidebar starts hidden */
   position: fixed;
   z-index: 1;
   top: 0;
@@ -131,19 +137,22 @@ input{
 .main-content {
   transition: margin-left 0.5s;
   padding: 16px;
-  margin-left: 0; /* Initially no margin */
+  margin-left: 0;
+  /* Initially no margin */
 }
 
 /* Sidebar is open (this will be toggled) */
 .sidenav.open {
-  width: 300px; /* Sidebar width when open */
+  width: 300px;
+  /* Sidebar width when open */
 }
 
 .main-content.open {
-  margin-left: 300px; /* Main content moves to the right */
+  margin-left: 300px;
+  /* Main content moves to the right */
 }
 
-.nav_profile{
+.nav_profile {
   align-items: flex-end;
 }
 
@@ -163,12 +172,16 @@ input{
 /* For mobile responsiveness (optional, keeps sidebar behavior consistent) */
 @media screen and (max-width: 768px) {
   .sidenav {
-      width: 100%; /* Full width on smaller screens */
+    width: 100%;
+    /* Full width on smaller screens */
   }
+
   .main-content {
-      margin-left: 0; /* No margin shift on mobile */
+    margin-left: 0;
+    /* No margin shift on mobile */
   }
 }
+
 .nav_songs {
   background-color: lightgray;
   padding: 1em;
@@ -285,8 +298,10 @@ input{
   display: block;
 }
 
-.song a:hover, .artist a:hover {
-  color: #1db954; /* Green color for hover effect */
+.song a:hover,
+.artist a:hover {
+  color: #1db954;
+  /* Green color for hover effect */
 }
 
 @keyframes move6 {
@@ -307,7 +322,7 @@ input{
   }
 }
 
-/* New_post style */ 
+/* New_post style */
 .card {
   margin: auto;
   width: 50%;
@@ -323,9 +338,9 @@ input{
   position: relative;
   z-index: 1;
   margin-top: 20px;
- }
- 
- .card::after {
+}
+
+.card::after {
   position: absolute;
   content: "";
   top: 30px;
@@ -339,9 +354,9 @@ input{
   background: #818181;
   background: var(--background);
   transition: opacity .5s;
- }
- 
- .card-info {
+}
+
+.card-info {
   background: #818181;
   color: black;
   display: flex;
@@ -350,36 +365,36 @@ input{
   height: 100%;
   overflow: visible;
   border-radius: .7rem;
- }
- 
- .new_post_title {
+}
+
+.new_post_title {
   color: black;
   font-weight: bold;
   letter-spacing: .1em;
   font-size: 30px;
   padding-top: 25px;
- }
+}
 
- .new_post_search{
+.new_post_search {
   margin-top: 25px;
   background-color: white;
- }
+}
 
- .card-img {
+.card-img {
   max-width: 200px;
   height: auto;
- }
+}
 
- .card-title {
+.card-title {
   text-align: left;
- }
+}
 
- .card-text {
+.card-text {
   margin: 5px;
- }
+}
 
 /* Comment Section */
- .comment-section-container {
+.comment-section-container {
   width: 100%;
   max-width: 500px;
   margin: 0 auto;
@@ -389,10 +404,12 @@ input{
 }
 
 .toggle-checkbox {
-  display: none; /* Hide the checkbox */
+  display: none;
+  /* Hide the checkbox */
 }
 
-.comment-toggle-button, .new_post_button{
+.comment-toggle-button,
+.new_post_button {
   display: inline-block;
   width: 100%;
   padding: 10px;
@@ -407,7 +424,8 @@ input{
   transition: background-color 0.3s ease;
 }
 
-.comment-toggle-button:hover,.new_post_button:hover{
+.comment-toggle-button:hover,
+.new_post_button:hover {
   background-color: #0056b3;
 }
 
@@ -457,83 +475,86 @@ input{
 }
 
 /* When the checkbox is checked, show the comment section */
-.toggle-checkbox:checked + .comment-toggle-button {
-  background-color: #dc3545; /* Change button color to indicate it's active */
+.toggle-checkbox:checked+.comment-toggle-button {
+  background-color: #dc3545;
+  /* Change button color to indicate it's active */
   color: white;
 }
 
-.toggle-checkbox:checked + .comment-toggle-button::after {
+.toggle-checkbox:checked+.comment-toggle-button::after {
   content: " (Hide Comments)";
 }
 
-.toggle-checkbox:checked ~ .comment-section {
-  max-height: 300px; /* Adjust to fit the content */
+.toggle-checkbox:checked~.comment-section {
+  max-height: 300px;
+  /* Adjust to fit the content */
   padding: 10px;
   opacity: 1;
 }
 
 .profile-img {
-  width: 150px; 
-  height: 150px; 
-  object-fit: cover; 
-  border-radius: 50%; 
+  width: 150px;
+  height: 150px;
+  object-fit: cover;
+  border-radius: 50%;
   border: 4px solid #355E3B
 }
-.profile-username{
+
+.profile-username {
   color: #355E3B;
 }
 
 .black-box {
-  background-color: black; 
-  color: white; 
-  padding: 20px; 
-  border-radius: 5px; 
-  display: flex; 
-  width: fit-content; 
-  margin: auto; 
-  border: 4px solid #355E3B; 
-  
+  background-color: black;
+  color: white;
+  padding: 20px;
+  border-radius: 5px;
+  display: flex;
+  width: fit-content;
+  margin: auto;
+  border: 4px solid #355E3B;
+
 }
 
 .follower {
-  background-color: rgb(53, 157, 255); 
-  color: white; 
-  padding: 20px; 
-  border-radius: 5px; 
-  display: flex; 
-  width: fit-content; 
-  margin: auto; 
-  border: 4px solid  rgb(35, 121, 201);  
+  background-color: rgb(53, 157, 255);
+  color: white;
+  padding: 20px;
+  border-radius: 5px;
+  display: flex;
+  width: fit-content;
+  margin: auto;
+  border: 4px solid rgb(35, 121, 201);
 }
 
 .follower:hover {
-  background-color: rgb(53, 157, 255); 
-  color: white; 
-  
+  background-color: rgb(53, 157, 255);
+  color: white;
+
 }
 
 .reg-card {
-  border: 5px solid  rgb(87, 87, 88)
+  border: 5px solid rgb(87, 87, 88)
 }
 
 .smaller-card {
-  max-width: 300px; 
+  max-width: 300px;
   margin: auto;
-  border: 5px solid  rgb(87, 87, 88); 
+  border: 5px solid rgb(87, 87, 88);
 }
 
 .card-title {
-  background-color: white; 
+  background-color: white;
   max-width: auto;
 }
 
-.playlist-title{
-  background-color: black; 
+.playlist-title {
+  background-color: black;
   color: white;
 }
 
-.edit-button{
-  max-width: 300px; 
+.edit-button {
+  max-width: 300px;
   font-size: 10px;
   text-align: right;
 }

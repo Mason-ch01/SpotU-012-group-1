@@ -9,7 +9,7 @@ const bodyParser = require('body-parser');
 const session = require('express-session'); // To set the session object. To store or access session data, use the `req.session`, which is (generally) serialized as JSON by the store.
 const bcrypt = require('bcryptjs'); //  To hash passwords
 
-Handlebars.registerHelper('json', function(context) {
+Handlebars.registerHelper('json', function (context) {
   return JSON.stringify(context);
 });
 
@@ -185,7 +185,7 @@ app.get('/spotify_callback', async function (req, res) {
 app.use(isAuthenticated);
 
 app.get('/welcome', (req, res) => {
-  res.json({status: 'success', message: 'Welcome!'});
+  res.json({ status: 'success', message: 'Welcome!' });
 });
 
 app.get('/search', (req, res) => {
@@ -265,7 +265,7 @@ async function searchSong(req, songName) {
 
 app.get('/get-track-details', async (req, res) => {
   const trackId = req.query.trackId; // Get the trackId from the query parameter
-  
+
   if (!trackId) {
     return res.status(400).send('Track ID is required');
   }
@@ -274,8 +274,8 @@ app.get('/get-track-details', async (req, res) => {
   if (new_post_details) {
     // Render a new page with the track details
     const currentUsername = req.session.username
-    const trackImageUrl = new_post_details.album.images.length > 0 ? new_post_details.album.images[0].url: '';
-    res.render('pages/new_posts', { 
+    const trackImageUrl = new_post_details.album.images.length > 0 ? new_post_details.album.images[0].url : '';
+    res.render('pages/new_posts', {
       track: new_post_details,
       track_image: trackImageUrl,
       username: currentUsername
@@ -318,7 +318,7 @@ app.post('/new_post', async (req, res) => {
     const songQuery = 'INSERT INTO songs (name, artist, link, image_url) VALUES ($1, $2, $3, $4) RETURNING songId';
     const songResult = await db.one(songQuery, [song_name, artist, song_link, song_image]);
     const songid = songResult.songid;
-    
+
     // Insert the post into the posts table
     const postQuery = 'INSERT INTO posts (userId, songId, playlistId, likes) VALUES ($1, $2, $3, $4) RETURNING postId';
     const postResult = await db.one(postQuery, [userid, songid, null, 0]);
@@ -326,7 +326,7 @@ app.post('/new_post', async (req, res) => {
 
     // Return success response
     res.redirect('\explore')
-    
+
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Failed to create song and post' });
@@ -386,7 +386,7 @@ app.get('/explore', async (req, res) => {
     // Format posts and handle potential null comments
     const formattedPosts = posts.map(post => ({
       ...post,
-      comments: post.comments ? post.comments : [] 
+      comments: post.comments ? post.comments : []
     }));
 
     // Render the 'explore' page with the posts data
@@ -410,8 +410,8 @@ app.post('/new_comment', async (req, res) => {
     console.log(commentText, postId, userId);
     // Validation
     if (!commentText || commentText.trim() === '') {
-      return res.status(400).json({ 
-        error: 'Comment cannot be empty' 
+      return res.status(400).json({
+        error: 'Comment cannot be empty'
       });
     }
 
@@ -420,28 +420,28 @@ app.post('/new_comment', async (req, res) => {
       INSERT INTO comments (userId, postId, comment) 
       VALUES ($1, $2, $3) 
       RETURNING commentId`;
-    
+
     await db.one(query, [userId, postId, commentText]);
 
     res.redirect('back');
   } catch (error) {
     console.error('Error adding comment:', error);
-    res.status(500).json({ 
-      error: 'Failed to add comment', 
-      details: error.message 
+    res.status(500).json({
+      error: 'Failed to add comment',
+      details: error.message
     });
   }
 });
-    
 
-  // inilize the profile page
-  app.get('/profile', async (req, res) => {
-    try {
-      // Retrieve the userId from the session
-      const userId = req.session.userId;
-  
-      // Query to fetch posts associated with the logged-in user
-      const postsQuery = `
+
+// inilize the profile page
+app.get('/profile', async (req, res) => {
+  try {
+    // Retrieve the userId from the session
+    const userId = req.session.userId;
+
+    // Query to fetch posts associated with the logged-in user
+    const postsQuery = `
         SELECT 
           posts.postId,
           posts.userId AS authorId,
@@ -477,88 +477,88 @@ app.post('/new_comment', async (req, res) => {
           posts.userId = $1 
         ORDER BY 
           posts.postId DESC;
-      `;  
-  
-      const posts = await db.any(postsQuery, [userId]);
-  
-      // Query to count how many people the user is following
-      const followingCountQuery = `
+      `;
+
+    const posts = await db.any(postsQuery, [userId]);
+
+    // Query to count how many people the user is following
+    const followingCountQuery = `
         SELECT COUNT(*) AS followingCount
         FROM followers
         WHERE followerId = $1;
       `;
-      const followingCountResult = await db.one(followingCountQuery, [userId]);
-      const followingCount = followingCountResult.followingcount;
+    const followingCountResult = await db.one(followingCountQuery, [userId]);
+    const followingCount = followingCountResult.followingcount;
 
-      // Query to count how many people follow  the user
-       const followersCountQuery = `
+    // Query to count how many people follow  the user
+    const followersCountQuery = `
        SELECT COUNT(*) AS followersCount
        FROM followers
        WHERE followeeId = $1;
      `;
-     const followersCountResult = await db.one(followersCountQuery, [userId]);
-     const followersCount = followersCountResult.followerscount;
-      // If there are no posts, send an empty array
-      if (!posts || posts.length === 0) {
-        return res.render('pages/profile', { posts: [], followingCount , followersCount});
-      }
-  
-      // Format posts and handle potential null comments
-      const formattedPosts = posts.map(post => ({
-        ...post,
-        comments: post.comments ? post.comments : [] 
-      }));
-  
-      // Render the profile page with posts and following count
-      res.render('pages/profile', { posts: formattedPosts, followingCount , followersCount});
-  
-    } catch (err) {
-      console.error('Error fetching posts:', err);
-      res.status(500).send('Server Error');
+    const followersCountResult = await db.one(followersCountQuery, [userId]);
+    const followersCount = followersCountResult.followerscount;
+    // If there are no posts, send an empty array
+    if (!posts || posts.length === 0) {
+      return res.render('pages/profile', { posts: [], followingCount, followersCount });
     }
-  });
-  
 
-  app.post('/update-profile-photo', async (req, res) => {
-    const userId = req.session.userId;
-    const newProfilePhoto = req.body.newProfilePhoto;
-    try {
-      // Update profile photo in the database for the given userId
-      const result = await db.any(
-        'UPDATE users SET profile_photo = $1 WHERE userId = $2 RETURNING profile_photo',
-        [newProfilePhoto, userId]
-      );
-      res.json({
-        success: true,
-        profile_photo: result[0].profile_photo,
-      });
-    } catch (err) {
-      console.error(err);
-      res.status(500).json({ success: false, message: 'Error updating profile photo' });
-    }
-  });
+    // Format posts and handle potential null comments
+    const formattedPosts = posts.map(post => ({
+      ...post,
+      comments: post.comments ? post.comments : []
+    }));
+
+    // Render the profile page with posts and following count
+    res.render('pages/profile', { posts: formattedPosts, followingCount, followersCount });
+
+  } catch (err) {
+    console.error('Error fetching posts:', err);
+    res.status(500).send('Server Error');
+  }
+});
 
 
-  app.get('/edit', (req, res) => {
-    res.render('pages/edit')
-  });
-  // authentication
-  const auth = (req, res, next) => {
-    if (!req.session.user) {
-      return res.redirect('/login');
-    }
-    next();
-  };
-  
-  app.use(auth);
-
-  app.get('/logout', (req, res) => {
-    req.session.destroy((err) => {
-      if (err) {
-        return res.status(500).send('Failed to log out.');
-      }
-      res.redirect('/login');  // Redirect to login page after logging out
+app.post('/update-profile-photo', async (req, res) => {
+  const userId = req.session.userId;
+  const newProfilePhoto = req.body.newProfilePhoto;
+  try {
+    // Update profile photo in the database for the given userId
+    const result = await db.any(
+      'UPDATE users SET profile_photo = $1 WHERE userId = $2 RETURNING profile_photo',
+      [newProfilePhoto, userId]
+    );
+    res.json({
+      success: true,
+      profile_photo: result[0].profile_photo,
     });
-  });  
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ success: false, message: 'Error updating profile photo' });
+  }
+});
+
+
+app.get('/edit', (req, res) => {
+  res.render('pages/edit')
+});
+// authentication
+const auth = (req, res, next) => {
+  if (!req.session.user) {
+    return res.redirect('/login');
+  }
+  next();
+};
+
+app.use(auth);
+
+app.get('/logout', (req, res) => {
+  req.session.destroy((err) => {
+    if (err) {
+      return res.status(500).send('Failed to log out.');
+    }
+    res.redirect('/login');  // Redirect to login page after logging out
+  });
+});
 
 module.exports = app.listen(3000);
