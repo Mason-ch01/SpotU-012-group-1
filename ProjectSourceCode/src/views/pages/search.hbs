@@ -1,3 +1,36 @@
+{{!-- <!-- Search Bar -->
+<div class="container mt-5" style="align-self: right; width:75%;">
+    <form method="get" action="/search-song">
+        <input type="text" id="songSearch" name="songName" placeholder="Search for Songs" style="color: white; border-radius: 20px; border:none;">
+    </form>
+</div>
+
+<!-- Display search results -->
+<div class="row mt-4">
+    {{#each tracks}}
+    <div class="col-md-4">
+        <div class="card" style="width: auto; height: 20cm;">
+        <img src="{{this.album.images.[0].url}}" class="card-img-top" alt="{{this.name}}">
+        <div class="card-body">
+            <h5 class="card-title" style="background-color: transparent">{{this.name}}</h5>
+            <br>
+            <p class="card-text">Artist(s): {{#each this.artists}}{{this.name}}{{#unless @last}}, {{/unless}}{{/each}}</p>
+            <a href={{this.uri}}>
+                <button type="button" class="btn btn-light">Listen Here</button>
+            </a>
+            <form method="get" action="/search-song">
+                <input name={{this.name}} disabled>
+                <button>Post</button>
+            </form>
+        </div>
+        </div>
+    </div>
+    {{else}}
+    <p>No songs found.</p>
+    {{/each}}
+</div>
+</div> --}}
+
 <!-- Search Bar -->
 <div class="container mt-5" style="align-self: right; width:75%;">
     <form method="get" action="/search-song">
@@ -9,19 +42,28 @@
 <div class="row mt-4">
     {{#each tracks}}
     <div class="col-md-4">
-        <div class="card" style="width: auto; height auto;">
-        <img src="{{this.album.images.[0].url}}" class="card-img-top" alt="{{this.name}}">
-        <div class="card-body">
-            <h5 class="card-title">{{this.name}}</h5>
-            <p class="card-text">Artist(s): {{#each this.artists}}{{this.name}}{{#unless @last}}, {{/unless}}{{/each}}</p>
-            <a href={{this.uri}}>
-                <button type="button" class="btn btn-light">Listen Here</button>
-            </a>
-        </div>
+        <div class="card" style="width: auto; height: 20cm;">
+            <img src="{{this.album.images.[0].url}}" class="card-img-top" alt="{{this.name}}">
+            <div class="card-body">
+                <h5 class="card-title" style="background-color: transparent">{{this.name}}</h5>
+                <br>
+                <p class="card-text">Artist(s): {{#each this.artists}}{{this.name}}{{#unless @last}}, {{/unless}}{{/each}}</p>
+                <a href={{this.uri}}>
+                    <button type="button" class="btn btn-light">Listen Here</button>
+                </a>
+
+                <!-- Form to save song to user's profile -->
+                <form method="POST" action="/post" style="display: inline;">
+                    <input type="hidden" name="songName" value="{{this.name}}">
+                    <input type="hidden" name="songUri" value="{{this.uri}}">
+                    <input type="hidden" name="albumImageUrl" value="{{this.album.images.[0].url}}">
+                    <input type="hidden" name="artist" value="{{this.artists}}">
+                    <button type="submit" class="btn btn-primary">Post</button>
+                </form>
+            </div>
         </div>
     </div>
     {{else}}
     <p>No songs found.</p>
     {{/each}}
-</div>
 </div>

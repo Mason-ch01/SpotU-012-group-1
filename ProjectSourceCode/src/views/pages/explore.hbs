@@ -9,7 +9,7 @@
                         
                         <div class="card-body d-flex flex-column">
                             <!-- Author Username -->
-                            <h5 class="card-title" style="color: white;">
+                            <h5 class="card-title" style="background-color: transparent; color:white">
                                 <strong>{{this.authorusername}}</strong>
                             </h5>
 
@@ -19,7 +19,7 @@
                                     <img src="{{this.songimage}}" alt="song-image" class="card-img"/>
                                 {{/if}}
 
-                                <div style="text-align: left;">
+                                <div style="text-align: center; align-content: center; margin:auto">
                                     <!-- Song Name, Artist, and Link -->
                                     {{#if songname}}
                                     <p class="card-text" style="color: white;">
@@ -27,11 +27,10 @@
                                             {{this.songname}}
                                         </strong>  
                                         <p style="color:white; text-align: left; margin-left: 16px; line-height: 0.8;">
-                                            {{this.songartist}}
                                         </p>
-                                        <a href="{{this.songlink}}" style="margin-left: 8px; line-height: 0.8;">
-                                            Listen Here
-                                        </a> 
+                                        <a href={{this.songlink}}>
+                                            <button type="button" class="btn btn-light">Listen Here</button>
+                                        </a>
                                     </p>
                                     {{/if}}
 
@@ -81,6 +80,6 @@
             {{/each}}
         </ul>
     {{else}}
-        <p>No posts from your followers yet.</p>
+        <p style="color:white">No posts from your followers yet.</p>
     {{/if}}
 </div>
