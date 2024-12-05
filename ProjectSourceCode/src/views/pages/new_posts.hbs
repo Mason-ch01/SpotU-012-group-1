@@ -1,8 +1,42 @@
-<div class="card">
-    <div class="card-info">
-        <form>
-            <p contenteditable="true" class="new_post_title" name="post_title">Post Title</p>
-            <input class="new_post_search" id="fsrch" name="Song_Name" placeholder="Song Name">
-        </form>
+<h1 style="color:white; text-align: center; margin-top: 2em;">New Post</h1>
+
+<!-- New Post Card -->
+<div class="container d-flex justify-content-center flex-wrap">
+    <div class="col-md-4 mb-4">
+        <div class="card h-100 d-flex flex-column" style="background-color: rgba(255,255,255,0.13); width: 600px;">
+            <div class="card-body d-flex flex-column">
+                <h5 class="card-text" style="color: white;">
+                    <strong>{{username}}</strong>
+                    </h5><br>
+
+                    <div class="d-flex align-items-start">
+                        <!-- Song Image -->
+                        <img src="{{track_image}}" alt="song-image" class="card-img"/>
+                        <div style="text-align: left;">
+                            <!-- Song Name, Artist, and Link -->
+                            <p class="card-text" style="color: white;">
+                                <strong style="font-size: 24px; margin-left: 8px">
+                                    {{track.name}}
+                                </strong>  
+                                <p style="color:white; text-align: left; margin-left: 16px; line-height: 0.8;">
+                                    {{#each track.artists}}
+                                        {{this.name}}{{#unless @last}}, {{/unless}} <!-- Track artists -->
+                                    {{/each}}
+                                </p>
+                                <a href="{{track.uri}}" style="margin-left: 15px; line-height: 0.8;">
+                                    Listen Here
+                                </a> 
+                            </p>
+                        </div>
+                    </div>
+                <form method="POST" action="/new_post" style="margin-top: 20px;">
+                    <input type="hidden" name="track_name" value="{{track.name}}" />
+                    <input type="hidden" name="track_artists" value="{{#each track.artists}}{{this.name}}{{#unless @last}}, {{/unless}}{{/each}}" />
+                    <input type="hidden" name="track_uri" value="{{track.uri}}"/>
+                    <input type="hidden" name="track_image" value="{{track_image}}" />
+                    <button type="submit" class="btn btn-primary" style="width: 100%;">Post</button>
+                </form>
+            </div>
+        </div>
     </div>
 </div>

@@ -1,10 +1,10 @@
 -- Insert test users
 INSERT INTO users (username, password, spotifyClientID, firstName, lastName) VALUES
-('john_doe', 'password123', 'spotify-id-001', 'John', 'Doe'),
-('jane_smith', 'password123', 'spotify-id-002', 'Jane', 'Smith'),
-('alice_wonder', 'password123', 'spotify-id-003', 'Alice', 'Wonder'),
-('bob_builder', 'password123', NULL, 'Bob', 'Builder'),
-('charlie_brown', 'password123', NULL, 'Charlie', 'Brown');
+('john_doe', '$2a$10$3OM8KJMTQ6QxU3U8lIcugO8sz.2CvZDaiHCS288g6bkDHBHt7H0RO', 'spotify-id-001', 'John', 'Doe'),
+('jane_smith', '$2a$10$3OM8KJMTQ6QxU3U8lIcugO8sz.2CvZDaiHCS288g6bkDHBHt7H0RO', 'spotify-id-002', 'Jane', 'Smith'),
+('alice_wonder', '$2a$10$3OM8KJMTQ6QxU3U8lIcugO8sz.2CvZDaiHCS288g6bkDHBHt7H0RO', 'spotify-id-003', 'Alice', 'Wonder'),
+('bob_builder', '$2a$10$3OM8KJMTQ6QxU3U8lIcugO8sz.2CvZDaiHCS288g6bkDHBHt7H0RO', NULL, 'Bob', 'Builder'),
+('charlie_brown', '$2a$10$3OM8KJMTQ6QxU3U8lIcugO8sz.2CvZDaiHCS288g6bkDHBHt7H0RO', NULL, 'Charlie', 'Brown');
 
 -- Insert test followers
 INSERT INTO followers (followerId, followeeId) VALUES
@@ -17,12 +17,12 @@ INSERT INTO followers (followerId, followeeId) VALUES
 (5, 2);
 
 -- Insert test songs
-INSERT INTO songs (name, artist, link) VALUES
-('Shape of You', 'Ed Sheeran', 'https://example.com/shape-of-you'),
-('Blinding Lights', 'The Weeknd', 'https://example.com/blinding-lights'),
-('Bohemian Rhapsody', 'Queen', 'https://example.com/bohemian-rhapsody'),
-('Havana', 'Camila Cabello', 'https://example.com/havana'),
-('Stairway to Heaven', 'Led Zeppelin', 'https://example.com/stairway-to-heaven');
+INSERT INTO songs (name, artist, link, image_url) VALUES
+('Shape of You', 'Ed Sheeran', 'https://open.spotify.com/track/7qiZfU4dY1lWllzX7mPBI3', 'https://i.scdn.co/image/ab67616d0000b273ba5db46f4b838ef6027e6f96'),
+('Blinding Lights', 'The Weeknd', 'https://open.spotify.com/track/0VjIjW4GlUZAMYd2vXMi3b', 'https://i.scdn.co/image/ab67616d0000b2738863bc11d2aa12b54f5aeb36'),
+('Bohemian Rhapsody', 'Queen','https://open.spotify.com/track/6l8GvAyoUZwWDgF1e4822w', 'https://i.scdn.co/image/ab67616d0000b2735a7602f0e508660b2ba40f8c'),
+('Havana', 'Camila Cabello','https://open.spotify.com/track/1rfofaqEpACxVEHIZBJe6W', 'https://i.scdn.co/image/ab67616d0000b2736eb0b9e73adcf04e4ed3eca4'),
+('Stairway to Heaven', 'Led Zeppelin','https://open.spotify.com/track/5CQ30WqJwcep0pYcV4AMNc', 'https://i.scdn.co/image/ab67616d0000b273c8a11e48c91a982d086afc69');
 
 -- Insert test playlists
 INSERT INTO playlists (name) VALUES
