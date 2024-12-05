@@ -1,17 +1,17 @@
-    {{>message}}
-    <div class="login_container">
-        <form class="login_form" method="POST" action="/login">
+{{>message}}
+<div class="login_container">
+    <form class="login_form" method="POST" action="/login">
         <h3>SPOT-U LOGIN</h3>
         <label for="username">Username:</label>
-        <br/>
+        <br />
         <input type="text" name="username" placeholder="Enter your username" id="username_id">
-        <br/>
+        <br />
         <label for="password">Password:</label>
-        <br/>
+        <br />
         <input type="password" name="password" placeholder="Enter your password" id="password_id">
-        <br/>
-        <input class="login" type="submit" value="Sign in"/>
+        <br />
+        <input class="login" type="submit" value="Sign in" />
         </br>
-        <p>Don't have an account? <a href="/register">Register</a></p> 
-        </form>
-    </div>
+        <p>Don't have an account? <a href="/register">Register</a></p>
+    </form>
+</div>
