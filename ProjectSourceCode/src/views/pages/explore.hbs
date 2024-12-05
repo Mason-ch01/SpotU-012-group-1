@@ -46,8 +46,8 @@
                             <div class="d-flex justify-content-center align-items-center position-relative">
                                 <!-- Comment Section -->
                                 <div class="comment-section-container">
-                                    <input type="checkbox" id="toggle-comments" class="toggle-checkbox">
-                                    <label for="toggle-comments" class="comment-toggle-button">Comments</label>
+                                    <input type="checkbox" id="toggle-comments-{{this.postid}}" class="toggle-checkbox">
+                                    <label for="toggle-comments-{{this.postid}}" class="comment-toggle-button">Comments</label>
                                     
                                     <div class="comment-section">
                                         <form method="POST" action="/new_comment">
