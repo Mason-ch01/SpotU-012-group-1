@@ -62,7 +62,7 @@ app.use(
   })
 );
 
-const redirect_uri = 'http://localhost:3000/spotify_callback';
+const redirect_uri = 'https://spotu-012-group-1.onrender.com/spotify_callback';
 
 function isAuthenticated(req, res, next) {
   if (!req.session.userId) {
