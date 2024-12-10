@@ -8,6 +8,9 @@
 ## About
 Social media application that allows users to match with other users based on posted playlists. Users will be able to post playlists to the application, and based off the posted playlists, it will generate similar users based on categories such as genre and artists.Each user will have a profile where they can post their favorite songs and playlists, and requests for their friends to listen to certain songs. From their the friends can like or dislike a certain song.
 
+## Link
+https://spotu-012-group-1.onrender.com 
+
 ## Contributors
 1. Zev Kunianski
 - GitHub: chinchillajo
